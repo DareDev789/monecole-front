@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from "@/Components/ui/dialog";
 
 export default function SchoolYearManager() {
     const [schoolYears, setSchoolYears] = useState([]);

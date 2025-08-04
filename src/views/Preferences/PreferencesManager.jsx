@@ -1,6 +1,6 @@
 import { useState } from "react";
-import SchoolYearsTab from "./SchoolYearsTab";
 import UsersTab from "./UsersTab";
+import SchoolYearsPage from "../../pages/SchoolYearsPage";
 
 export default function PreferencesManager() {
     const [activeTab, setActiveTab] = useState("schoolYears");
@@ -13,7 +13,7 @@ export default function PreferencesManager() {
             </div>
 
             <div className="w-full mt-4">
-                {activeTab === "schoolYears" && <SchoolYearsTab />}
+                {activeTab === "schoolYears" && <SchoolYearsPage />}
                 {activeTab === "users" && <UsersTab />}
             </div>
         </div>

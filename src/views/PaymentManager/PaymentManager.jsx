@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import Input from '../../Components/ui/Input';
+import Button from '../../Components/ui/Button';
+import { Dialog, DialogContent, DialogTitle, DialogTrigger } from '../../Components/ui/dialog';
 
 export default function PaymentManager() {
   const [payments, setPayments] = useState([]);
@@ -78,7 +78,9 @@ export default function PaymentManager() {
         <h2 className="text-2xl font-semibold">Paiements</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button onClick={resetForm}>Ajouter</Button>
+            <button className="bg-blue-600 text-white px-4 py-2 rounded" onClick={resetForm}>
+              Ajouter
+            </button>
           </DialogTrigger>
           <DialogContent>
             <DialogTitle>{editingId ? 'Modifier' : 'Nouveau paiement'}</DialogTitle>

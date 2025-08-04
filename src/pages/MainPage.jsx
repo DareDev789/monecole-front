@@ -3,7 +3,7 @@ import logo_bleu from "/logo_bleu.png";
 import Tippy from "@tippyjs/react";
 import { faGears, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
 import { ShowContext } from "../Contextes/UseShow";
-import React, { useContext, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Dashboard from '../views/Dashboard/Dashboard';
 
@@ -11,15 +11,15 @@ import PersonnelsManager from '../views/Personnels/PersonnelsManager';
 import ClassesManager from '../views/Classes/ClassesManager';
 
 import VueOneClasse from '../views/Classes/VueOneClasse';
-
-import RoomList from '../views/Classes/ClassesList';
-import RoomForm from '../views/Classes/ClassesForm';
-import RoomShow from "../views/Classes/ClassesManager";
 import MatieresManager from "../views/Matieres/MatieresManager";
 import VueOneSubject from "../views/Matieres/VueOneSubject";
 import EleveManager from "../views/ElevesComp/EleveManager";
 import MonProfil from "../views/MonProfil/MonProfil";
 import PreferencesManager from "../views/Preferences/PreferencesManager";
+import PaymentManager from "../views/PaymentManager/PaymentManager";
+
+import { configureApi } from '../services/api';
+import { UrlContext } from '../Contextes/UseUrl';
 
 
 function MainPage() {
@@ -30,6 +30,8 @@ function MainPage() {
     const tokenString = localStorage.getItem("token");
     let token = JSON.parse(tokenString);
 
+    const { url } = useContext(UrlContext);
+
     const userString = localStorage.getItem("user");
     let user = JSON.parse(userString);
 
@@ -38,6 +40,10 @@ function MainPage() {
     function logout() {
         setShowLogout(true);
     }
+
+    useEffect(() => {
+        configureApi(url, token);
+    }, [url, token]);
 
     return (
         <>
@@ -163,8 +169,8 @@ function MainPage() {
                         <Route path="/gestion-eleves" element={<EleveManager />} />
                         <Route path="/mon-profil" element={<MonProfil />} />
                         <Route path="/preferences" element={<PreferencesManager />} />
-                        {/*<Route path="/room/:id" element={<RoomShow />} />
-                        <Route path="/room/create" element={<RoomForm />} />
+                        <Route path="/paiements" element={<PaymentManager />} />
+                        {/*<Route path="/room/create" element={<RoomForm />} />
                         <Route path="/room/:id/edit" element={<RoomForm />} /> */}
                     </Routes>
                 </main>

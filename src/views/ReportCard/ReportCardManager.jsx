@@ -7,17 +7,17 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
+} from "@/Components/ui/table";
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
+} from "@/Components/ui/dialog";
+import { Input } from "@/Components/ui/input";
+import { Button } from "@/Components/ui/button";
+import { Label } from "@/Components/ui/label";
 
 export default function ReportCardManager() {
   const [reportCards, setReportCards] = useState([]);
