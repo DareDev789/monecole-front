@@ -15,7 +15,8 @@ export default function ElevesList({ onEdit, eleves, setEleves }) {
     const page = parseInt(searchParams.get("page")) || 1;
 
     const fetchStudents = async () => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
@@ -38,7 +39,8 @@ export default function ElevesList({ onEdit, eleves, setEleves }) {
 
     const handleDelete = async (id) => {
         if (!window.confirm("Supprimer cet élève ?")) return;
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
@@ -56,7 +58,8 @@ export default function ElevesList({ onEdit, eleves, setEleves }) {
 
     const handleDeleteMany = async () => {
         if (!window.confirm("Supprimer les élèves sélectionnés ?")) return;
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
@@ -150,8 +153,8 @@ export default function ElevesList({ onEdit, eleves, setEleves }) {
                             key={i}
                             onClick={() => goToPage(i + 1)}
                             className={`px-3 py-1 rounded ${pagination.current_page === i + 1
-                                    ? "bg-blue-500 text-white"
-                                    : "bg-gray-100"
+                                ? "bg-blue-500 text-white"
+                                : "bg-gray-100"
                                 }`}
                         >
                             {i + 1}

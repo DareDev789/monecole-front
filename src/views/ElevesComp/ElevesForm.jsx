@@ -79,7 +79,8 @@ export default function ElevesForm({ selectedEleves, handleSuccess, showMap, set
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };

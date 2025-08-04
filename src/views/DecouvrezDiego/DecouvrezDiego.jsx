@@ -13,7 +13,7 @@ export default function DecouvrezDiego() {
 
     const getAllConf = async () => {
         const tokenString = localStorage.getItem("token");
-        const token = JSON.parse(tokenString);
+        let token = JSON.parse(tokenString);
 
         try {
             nProgress.start();
@@ -34,11 +34,11 @@ export default function DecouvrezDiego() {
 
     const handleSave = async () => {
         const tokenString = localStorage.getItem("token");
-        const token = JSON.parse(tokenString);
+        let token = JSON.parse(tokenString);
         try {
             nProgress.start();
             const formData = {
-               content: DescriptionEditorRef.current.getContent(),
+                content: DescriptionEditorRef.current.getContent(),
             };
 
             const response = await axios.put(`${url}/api/decouvrez/1`, formData, {
@@ -65,7 +65,7 @@ export default function DecouvrezDiego() {
     return (
         <>
             {showPopup && (
-                <ChercherImage setShowPopup={setShowPopup}/>
+                <ChercherImage setShowPopup={setShowPopup} />
             )}
             <div className="w-full p-6 bg-white rounded-md mt-4">
                 <div className="w-full block md:flex items-center justify-between">
@@ -73,7 +73,7 @@ export default function DecouvrezDiego() {
                         <h1 className="font-bold text-xl">Découvrez Diego Suarez</h1>
                     </div>
                     <div className="bg-gray-800 text-white px-2 py-1 rounded-sm">
-                        <button onClick={()=> setShowPopup(true)} className="">Rechercher des images</button>
+                        <button onClick={() => setShowPopup(true)} className="">Rechercher des images</button>
                     </div>
                 </div>
                 <div className="my-4">

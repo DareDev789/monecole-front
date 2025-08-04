@@ -18,7 +18,8 @@ export default function GradeManager() {
     });
     const [editingGrade, setEditingGrade] = useState(null);
 
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = { Authorization: `Bearer ${token}` };
 
     const fetchGrades = async () => {

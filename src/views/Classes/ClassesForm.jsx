@@ -9,8 +9,8 @@ export default function ClassesForm({ selectedClasse, onSuccess, showMap, setSho
     const [name, setName] = useState("");
     const [registration_fee, setRegistrationFee] = useState("");
     const [monthly_fee, setMonthlyFee] = useState("");
-    const [next_class_id, setNextClassId] = useState(""); 
-    
+    const [next_class_id, setNextClassId] = useState("");
+
 
     const { url } = useContext(UrlContext);
     const popupRef = useRef(null);
@@ -33,7 +33,8 @@ export default function ClassesForm({ selectedClasse, onSuccess, showMap, setSho
         e.preventDefault();
         nProgress.start();
 
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
@@ -115,12 +116,12 @@ export default function ClassesForm({ selectedClasse, onSuccess, showMap, setSho
                                     <select className="border rounded p-2 w-full" value={next_class_id} onChange={(e) => setNextClassId(e.target.value)}>
                                         <option value="">Choisir la classe supérieure</option>
                                         {Array.isArray(classes) && classes.map((classe) => (
-                                        <option
-                                            key={classe.id} value={classe.id}
-                                            className="flex justify-between items-center border p-2 mb-2"
-                                        >
-                                            {classe.name}
-                                        </option>
+                                            <option
+                                                key={classe.id} value={classe.id}
+                                                className="flex justify-between items-center border p-2 mb-2"
+                                            >
+                                                {classe.name}
+                                            </option>
                                         ))}
                                     </select>
                                 </div>

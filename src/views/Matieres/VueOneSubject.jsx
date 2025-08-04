@@ -21,7 +21,8 @@ export default function VueOneSubject() {
     const [newClass, setNewClass] = useState({});
 
     const fetchSubjects = async () => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
@@ -32,7 +33,7 @@ export default function VueOneSubject() {
         } catch (err) {
             console.error("Erreur lors du chargement de la classe :", err);
         }
-    }; 
+    };
 
 
     useEffect(() => {
@@ -47,7 +48,8 @@ export default function VueOneSubject() {
 
 
     const saveClasse = async (classe) => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
@@ -64,7 +66,7 @@ export default function VueOneSubject() {
                     ],
                 }, { headers });
             } else {
-                
+
             }
             setNewClass({});
             fetchSubjects();
@@ -77,18 +79,19 @@ export default function VueOneSubject() {
 
 
     const RetirerClasse = async (id) => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
             nProgress.start();
             await axios.delete(`${url}class-subjects/remove`, {
-            headers,
-            data: {
-                class_id: id,
-                subject_id: subject.id
-            }
-        });
+                headers,
+                data: {
+                    class_id: id,
+                    subject_id: subject.id
+                }
+            });
             fetchSubjects();
         } catch (err) {
             console.error("Erreur lors de la suppression :", err);
@@ -120,7 +123,7 @@ export default function VueOneSubject() {
                                                 <div className="px-2">
                                                     {classe.name}
                                                 </div>
-                                                
+
                                                 <div className="flex gap-2 justify-end">
                                                     <button
                                                         className="bg-red-600 text-white px-2 py-1 text-sm rounded"
@@ -141,7 +144,7 @@ export default function VueOneSubject() {
                 )}
 
 
-                <SelectClasse newClass={newClass} setNewClass={setNewClass} saveClasse={saveClasse} classesChoosed={classes}/>
+                <SelectClasse newClass={newClass} setNewClass={setNewClass} saveClasse={saveClasse} classesChoosed={classes} />
             </div>
         </div>
     );

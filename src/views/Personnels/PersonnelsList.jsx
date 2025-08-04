@@ -16,7 +16,8 @@ const PersonnelsList = ({ onEdit }) => {
   const page = parseInt(searchParams.get("page")) || 1;
 
   const fetchEmployes = async () => {
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -39,7 +40,8 @@ const PersonnelsList = ({ onEdit }) => {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Supprimer cet employé ?")) return;
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -57,7 +59,8 @@ const PersonnelsList = ({ onEdit }) => {
 
   const handleDeleteMany = async () => {
     if (!window.confirm("Supprimer les employés sélectionnés ?")) return;
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -150,11 +153,10 @@ const PersonnelsList = ({ onEdit }) => {
           <button
             key={i}
             onClick={() => goToPage(i + 1)}
-            className={`px-3 py-1 rounded ${
-              pagination.current_page === i + 1
-                ? "bg-blue-500 text-white"
-                : "bg-gray-100"
-            }`}
+            className={`px-3 py-1 rounded ${pagination.current_page === i + 1
+              ? "bg-blue-500 text-white"
+              : "bg-gray-100"
+              }`}
           >
             {i + 1}
           </button>

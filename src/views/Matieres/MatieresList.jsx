@@ -11,7 +11,8 @@ const MatieresList = ({ onEdit, subjects, setSubject }) => {
   const { url } = useContext(UrlContext);
 
   const fetchSubjects = async () => {
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = {
       Authorization: `Bearer ${token}`,
     };
@@ -33,7 +34,8 @@ const MatieresList = ({ onEdit, subjects, setSubject }) => {
 
   const handleDelete = async (id) => {
     if (!window.confirm("Supprimer cette matière ?")) return;
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = {
       Authorization: `Bearer ${token}`,
     };

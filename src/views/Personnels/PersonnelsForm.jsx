@@ -41,7 +41,8 @@ const PersonnelsForm = ({ selectedEmploye, onSuccess, showMap, setShowMap }) => 
     e.preventDefault();
     nProgress.start();
 
-    const token = JSON.parse(localStorage.getItem("token"));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = {
       Authorization: `Bearer ${token}`,
     };

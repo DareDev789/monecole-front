@@ -10,7 +10,8 @@ export default function SchoolYearManager() {
     const [editingId, setEditingId] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
 
-    const token = JSON.parse(localStorage.getItem('token'));
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
     const headers = { Authorization: `Bearer ${token}` };
 
     const fetchSchoolYears = async () => {

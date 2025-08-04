@@ -12,7 +12,8 @@ export default function ClassesList({ onEdit, classes, setClasses }) {
     const { url } = useContext(UrlContext);
 
     const fetchClasses = async () => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
@@ -34,7 +35,8 @@ export default function ClassesList({ onEdit, classes, setClasses }) {
 
     const handleDelete = async (id) => {
         if (!window.confirm("Supprimer cette classe ?")) return;
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };

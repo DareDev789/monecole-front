@@ -10,7 +10,8 @@ export default function CreateOrSelectMatiere({ setNewSubject, newSubject, saveS
     const [selectedSubject, setSelectedSubject] = useState(null);
 
     const fetchMatieres = async () => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
@@ -85,9 +86,9 @@ export default function CreateOrSelectMatiere({ setNewSubject, newSubject, saveS
                         </select>
                         {selectedSubject && (
                             <button className="mt-4 px-5 py-1 bg-gray-900 text-white"
-                                onClick={() => { 
-                                    saveSubject({ ...newSubject, id: selectedSubject.id, name: selectedSubject.name, coefficient: selectedSubject.coefficient }); 
-                                    setSelectedSubject(null) 
+                                onClick={() => {
+                                    saveSubject({ ...newSubject, id: selectedSubject.id, name: selectedSubject.name, coefficient: selectedSubject.coefficient });
+                                    setSelectedSubject(null)
                                 }}>{'>> '}Ajouter {selectedSubject.name}</button>
                         )}
                     </div>

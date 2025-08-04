@@ -23,7 +23,8 @@ export default function VueOneClasse() {
     const [newSubject, setNewSubject] = useState({ name: '', coefficient: 1 });
 
     const fetchClasse = async () => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
@@ -54,7 +55,8 @@ export default function VueOneClasse() {
     };
 
     const saveSubject = async (subject) => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
@@ -95,18 +97,19 @@ export default function VueOneClasse() {
 
 
     const deleteSubject = async (id) => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = { Authorization: `Bearer ${token}` };
 
         try {
             nProgress.start();
             await axios.delete(`${url}class-subjects/remove`, {
-            headers,
-            data: {
-                class_id: classe.id,
-                subject_id: id
-            }
-        });
+                headers,
+                data: {
+                    class_id: classe.id,
+                    subject_id: id
+                }
+            });
             fetchClasse();
         } catch (err) {
             console.error("Erreur lors de la suppression :", err);
@@ -182,7 +185,7 @@ export default function VueOneClasse() {
                 )}
 
 
-                <CreateOrSelectMatiere setNewSubject={setNewSubject} newSubject={newSubject} saveSubject={saveSubject} matieresChoosed={editedSubjects}/>
+                <CreateOrSelectMatiere setNewSubject={setNewSubject} newSubject={newSubject} saveSubject={saveSubject} matieresChoosed={editedSubjects} />
             </div>
         </div>
     );

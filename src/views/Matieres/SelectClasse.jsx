@@ -8,7 +8,8 @@ export default function SelectClasse({ newClass, setNewClass, saveClasse, classe
     const [selectedClasse, setSelectedClasse] = useState(null);
 
     const fetchClasses = async () => {
-        const token = JSON.parse(localStorage.getItem("token"));
+        const tokenString = localStorage.getItem("token");
+        let token = JSON.parse(tokenString);
         const headers = {
             Authorization: `Bearer ${token}`,
         };
