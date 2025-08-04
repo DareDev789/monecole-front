@@ -1,7 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import logo_bleu from "/logo_bleu.png";
 import Tippy from "@tippyjs/react";
-import { faGears, faSignOutAlt } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faGears, faSignOutAlt, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { ShowContext } from "../Contextes/UseShow";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
@@ -67,6 +67,17 @@ function MainPage() {
                             </div>
                             <div>
                                 <Tippy
+                                    content="menus"
+                                >
+                                    <FontAwesomeIcon
+                                        onClick={() => setShowAllMenu(!showAllMenu)}
+                                        icon={!showAllMenu ? faBars : faXmark}
+                                        className="p-4 cursor-pointer focus:outline-none sm:hidden block "
+                                    />
+                                </Tippy>
+                            </div>
+                            <div>
+                                <Tippy
                                     content="Preferences"
                                 >
                                     <FontAwesomeIcon
@@ -91,8 +102,76 @@ function MainPage() {
                     </div>
                 </header>
             </div>
-            <div className="container mx-auto flex flex-col md:flex-row mt-14">
-                <aside className="hidden md:block bg-gray-800 text-white w-full md:w-1/6 p-4 overflow-auto max-h-[calc(100vh-3.6em)] scrollbar-thin">
+            <div className="container mx-auto flex flex-col md:flex-row mt-14 relative">
+                {showAllMenu && (
+                    <div className="w-full backdrop-blur-lg h-screen">
+                        <div className="bg-white text-gray-900 gap-2 space-y-4 absolute top-0 right-0 w-64 max-w-full z-[60] shaddow-xl">
+                            <nav className="block space-y-2 w-full list-none">
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/dashboard`)}
+                                >
+                                    Dashbord
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/personnels`)}
+                                >
+                                    Personnels
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/classes`)}
+                                >
+                                    Classes
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/matieres`)}
+                                >
+                                    Matières
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/gestion-eleves`)}
+                                >
+                                    Gestion des élèves
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/gestion-notes`)}
+                                >
+                                    Gestion des notes
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/bulletins`)}
+                                >
+                                    Bulletins
+                                </li>
+                                <li
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                                    onClick={() => navigate(`/paiements`)}
+                                >
+                                    Paiements
+                                </li>
+                                {/* <li
+                            className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                            onClick={() => navigate(`/reservation-to-validate`)}
+                        >
+                            Réservation à valider
+                        </li>
+                        <li
+                            className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
+                            onClick={() => navigate(`/reservations`)}
+                        >
+                            Réservations
+                        </li> */}
+                            </nav>
+                        </div>
+                    </div>
+                )}
+                <aside className={`hidden md:block bg-gray-800 text-white w-full md:w-1/6 p-4 overflow-auto max-h-[calc(100vh-3.6em)] scrollbar-thin`}>
                     <nav className="flex flex-wrap gap-2 md:block md:space-y-2 w-full list-none">
                         <li
                             className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
