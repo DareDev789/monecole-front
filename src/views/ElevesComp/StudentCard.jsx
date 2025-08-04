@@ -1,5 +1,5 @@
 import Button from '../../Components/ui/Button';
-import Badge from '../../Components/ui/Badge';
+// import Badge from '../../Components/ui/Badge';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faEnvelope, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
 
@@ -48,10 +48,10 @@ export default function StudentCard({ student, currentYear, onEdit, onEnroll }) 
 
         {currentYear && (
           <div className="mt-4">
-            <Badge 
+            {/* <Badge 
               variant={isEnrolled ? 'success' : 'warning'}
               text={isEnrolled ? 'Inscrit cette année' : 'Non inscrit'}
-            />
+            /> */}
           </div>
         )}
       </div>

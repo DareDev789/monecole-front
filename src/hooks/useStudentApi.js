@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
-import { schoolYearApi } from '../services/api';
+import { studentApi } from '../services/api';
 
-export const useSchoolYears = () => {
-  const [schoolYears, setSchoolYears] = useState([]);
+export const useStudentApi = () => {
+  const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [pagination, setPagination] = useState({
@@ -11,11 +11,11 @@ export const useSchoolYears = () => {
     per_page: 20,
   });
 
-  const fetchSchoolYears = async (page = 1) => { 
+  const fetchAllStudents = async (page = 1) => {
     try {
       setLoading(true);
-      const response = await schoolYearApi.getAll({ params: { page } });
-      setSchoolYears(response.data.data);
+      const response = await studentApi.getAll({ params: { page } });
+      setStudents(response.data.data);
       setPagination({
         current_page: response.data.current_page,
         total: response.data.total,
@@ -29,33 +29,33 @@ export const useSchoolYears = () => {
   };
 
   useEffect(() => {
-    fetchSchoolYears();
+    fetchAllStudents();
   }, []);
 
-  const createSchoolYear = async (data) => {
+  const createStudents = async (data) => {
     try {
-      const response = await schoolYearApi.create(data);
-      await fetchSchoolYears();
+      const response = await studentApi.create(data);
+      await fetchAllStudents();
       return { success: true, data: response.data };
     } catch (err) {
       return { success: false, error: err.response?.data };
     }
   };
 
-  const updateSchoolYear = async (id, data) => {
+  const updateStudents = async (id, data) => {
     try {
-      const response = await schoolYearApi.update(id, data);
-      await fetchSchoolYears(pagination.current_page);
+      const response = await studentApi.update(id, data);
+      await fetchAllStudents(pagination.current_page);
       return { success: true, data: response.data };
     } catch (err) {
       return { success: false, error: err.response?.data };
     }
   };
 
-  const deleteSchoolYear = async (id) => {
+  const deleteStudents = async (id) => {
     try {
-      await schoolYearApi.delete(id);
-      await fetchSchoolYears(pagination.current_page);
+      await studentApi.delete(id);
+      await fetchAllStudents(pagination.current_page);
       return { success: true };
     } catch (err) {
       return { success: false, error: err.response?.data };
@@ -63,13 +63,13 @@ export const useSchoolYears = () => {
   };
 
   return {
-    schoolYears,
+    students,
     loading,
     error,
     pagination,
-    fetchSchoolYears,
-    createSchoolYear,
-    updateSchoolYear,
-    deleteSchoolYear,
+    fetchAllStudents,
+    createStudents,
+    updateStudents,
+    deleteStudents,
   };
 };

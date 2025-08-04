@@ -1,6 +1,5 @@
 import { faCalendar, faPencil, faTrash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { CalendarIcon, CheckCircleIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 

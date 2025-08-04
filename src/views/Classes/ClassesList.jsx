@@ -7,44 +7,22 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { Link, useSearchParams } from "react-router-dom";
 
-export default function ClassesList({ onEdit, classes, setClasses }) {
+export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
     const [selected, setSelected] = useState([]);
     const { url } = useContext(UrlContext);
 
-    const fetchClasses = async () => {
-        const tokenString = localStorage.getItem("token");
-        let token = JSON.parse(tokenString);
-        const headers = {
-            Authorization: `Bearer ${token}`,
-        };
-
-        try {
-            nProgress.start();
-            const res = await axios.get(`${url}classes`, { headers });
-            setClasses(res.data.data || []);
-        } catch (err) {
-            console.error("Erreur lors du chargement des classes :", err);
-        } finally {
-            nProgress.done();
-        }
-    };
 
     useEffect(() => {
-        fetchClasses();
+        loadClasses();
     }, []);
 
     const handleDelete = async (id) => {
         if (!window.confirm("Supprimer cette classe ?")) return;
-        const tokenString = localStorage.getItem("token");
-    let token = JSON.parse(tokenString);
-        const headers = {
-            Authorization: `Bearer ${token}`,
-        };
 
         try {
             nProgress.start();
-            await axios.delete(`${url}classes/${id}`, { headers });
-            fetchClasses();
+            await classApi.getAll($id);
+            loadClasses();
         } catch (error) {
             console.error("Erreur lors de la suppression :", error);
         } finally {

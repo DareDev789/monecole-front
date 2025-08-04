@@ -1,11 +1,10 @@
-import StudentCard from '../cards/StudentCard';
-import EmptyState from '../../Components/ui/EmptyState';
-import LoadingIndicator from '../../Components/ui/LoadingIndicator';
+import StudentCard from '../StudentCard';
+import EmptyState from '../../../Components/ui/EmptyState';
+import LoadingIndicator from '../../../Components/ui/LoadingIndicator';
 
 export default function StudentList({ students, loading, currentYear, onEdit, onEnroll }) {
   if (loading) return <LoadingIndicator />;
-
-  if (students.length === 0) {
+  if (students?.length === 0) {
     return (
       <EmptyState
         title="Aucun étudiant trouvé"
@@ -16,7 +15,7 @@ export default function StudentList({ students, loading, currentYear, onEdit, on
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-      {students.map(student => (
+      {students?.map(student => (
         <StudentCard
           key={student.id}
           student={student}

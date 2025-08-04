@@ -32,7 +32,7 @@ export const configureApi = (baseURL, token) => {
 // Endpoints API
 export const schoolYearApi = {
     getAll: () => api.get('/school-years'),
-    getCurrent: () => api.get('/school-years/current'),
+    getCurrent: () => api.get('/schoolyears/current'),
     setCurrent: (id) => api.post(`/school-years/${id}/set-current`),
     create: (data) => api.post('/school-years', data),
     update: (id, data) => api.put(`/school-years/${id}`, data),

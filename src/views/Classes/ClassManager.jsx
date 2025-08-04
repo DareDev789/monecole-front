@@ -1,12 +1,11 @@
 import { useState, useEffect } from 'react';
-import { useApi } from '../../services/api'; 
-import ClassList from './lists/ClassList';
-import ClassForm from './forms/ClassForm';
-import Modal from '../ui/Modal';
-import Button from '../ui/Button';
+import { classApi } from '../../services/api'; 
+import ClassList from './ClassesList';
+import ClassForm from './ClassesForm';
+import Modal from '../../Components/ui/Modal';
+import Button from '../../Components/ui/Button';
 
 export default function ClassManager() {
-  const { classApi } = useApi();
   const [classes, setClasses] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingClass, setEditingClass] = useState(null);
@@ -20,7 +19,7 @@ export default function ClassManager() {
     setLoading(true);
     try {
       const response = await classApi.getAll({ with: 'subjects' });
-      setClasses(response.data);
+      setClasses(response.data.data);
     } finally {
       setLoading(false);
     }
@@ -45,11 +44,12 @@ export default function ClassManager() {
           setEditingClass(classItem);
           setIsFormOpen(true);
         }}
+        loadClasses={loadClasses}
       />
 
       <Modal
         isOpen={isFormOpen}
-        onClose={() => setIsFormOpen(false)}
+        setIsOpen={() => setIsFormOpen(false)}
         title={editingClass ? 'Modifier Classe' : 'Nouvelle Classe'}
       >
         <ClassForm

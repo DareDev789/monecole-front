@@ -20,6 +20,8 @@ import PaymentManager from "../views/PaymentManager/PaymentManager";
 
 import { configureApi } from '../services/api';
 import { UrlContext } from '../Contextes/UseUrl';
+import StudentManager from "../views/ElevesComp/StudentManager";
+import ClassManager from "../views/Classes/ClassManager";
 
 
 function MainPage() {
@@ -241,11 +243,11 @@ function MainPage() {
                         <Route path={`/dashboard`} element={<Dashboard />} />
                         <Route path={`/`} element={<Dashboard />} />
                         <Route path={`/personnels`} element={<PersonnelsManager />} />
-                        <Route path="/classes" element={<ClassesManager />} />
+                        <Route path="/classes" element={<ClassManager />} />
                         <Route path="/view-one-classe/:id" element={<VueOneClasse />} />
                         <Route path="/matieres" element={<MatieresManager />} />
                         <Route path="/view-one-matiere/:id" element={<VueOneSubject />} />
-                        <Route path="/gestion-eleves" element={<EleveManager />} />
+                        <Route path="/gestion-eleves" element={<StudentManager />} />
                         <Route path="/mon-profil" element={<MonProfil />} />
                         <Route path="/preferences" element={<PreferencesManager />} />
                         <Route path="/paiements" element={<PaymentManager />} />
