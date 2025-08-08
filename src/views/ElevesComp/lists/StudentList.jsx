@@ -2,7 +2,7 @@ import StudentCard from '../StudentCard';
 import EmptyState from '../../../Components/ui/EmptyState';
 import LoadingIndicator from '../../../Components/ui/LoadingIndicator';
 
-export default function StudentList({ students, loading, currentYear, onEdit, onEnroll }) {
+export default function StudentList({ students, loading, currentYear, onEdit, onEnroll, loadData }) {
   if (loading) return <LoadingIndicator />;
   if (students?.length === 0) {
     return (
@@ -22,6 +22,7 @@ export default function StudentList({ students, loading, currentYear, onEdit, on
           currentYear={currentYear}
           onEdit={() => onEdit(student)}
           onEnroll={() => onEnroll(student)}
+          loadData={loadData}
         />
       ))}
     </div>

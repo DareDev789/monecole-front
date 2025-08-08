@@ -6,6 +6,8 @@ import Modal from '../../Components/ui/Modal';
 import Button from '../../Components/ui/Button';
 import EnrollmentForm from './forms/EnrollmentForm';
 import Notiflix from "notiflix";
+import Pagination from '../../Components/ui/Pagination';
+import { useParams, useNavigate } from 'react-router-dom';
 
 export default function StudentManager() {
   // const { studentApi, schoolYearApi } = api();
@@ -15,20 +17,35 @@ export default function StudentManager() {
   const [isEnrollFormOpen, setIsEnrollFormOpen] = useState(false);
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [loading, setLoading] = useState(true);
+  const { page } = useParams();
+  const navigate = useNavigate();
+  const currentPage = parseInt(page) || 1;
+
+  const [pagination, setPagination] = useState({
+    total: 0,
+    per_page: 10,
+    current_page: 1,
+  });
+
 
   useEffect(() => {
-    loadData();
-  }, []);
+    loadData(currentPage);
+  }, [currentPage]);
 
-  const loadData = async () => {
+  const loadData = async (page) => {
     setLoading(true);
     try {
       const [studentsRes, currentYearRes] = await Promise.all([
-        studentApi.getAll(),
+        studentApi.getAll(page),
         schoolYearApi.getCurrent()
       ]);
       setStudents(studentsRes.data.data);
       setCurrentYear(currentYearRes.data);
+      setPagination({
+        total: studentsRes.data.total,
+        per_page: studentsRes.data.per_page,
+        current_page: studentsRes.data.current_page,
+      });
     } finally {
       setLoading(false);
     }
@@ -38,6 +55,11 @@ export default function StudentManager() {
     setSelectedStudent(student);
     setIsEnrollFormOpen(true);
   };
+
+  const handlePageChange = (newPage) => {
+    navigate(`/gestion-eleves/page/${newPage}`);
+  };
+
 
   return (
     <div className="space-y-6">
@@ -60,6 +82,7 @@ export default function StudentManager() {
           setIsFormOpen(true);
         }}
         onEnroll={handleEnroll}
+        loadData={loadData}
       />
 
       <Modal
@@ -118,6 +141,16 @@ export default function StudentManager() {
           onCancel={() => setIsEnrollFormOpen(false)}
         />
       </Modal>
+      {pagination.total > pagination.per_page && (
+        <div className="mt-6">
+          <Pagination
+            currentPage={pagination.current_page}
+            totalPages={Math.ceil(pagination.total / pagination.per_page)}
+            onPageChange={handlePageChange}
+          />
+        </div>
+      )}
+
     </div>
   );
 }

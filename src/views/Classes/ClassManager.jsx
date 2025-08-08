@@ -5,6 +5,7 @@ import ClassForm from './ClassesForm';
 import Modal from '../../Components/ui/Modal';
 import Button from '../../Components/ui/Button';
 
+
 export default function ClassManager() {
   const [classes, setClasses] = useState([]);
   const [isFormOpen, setIsFormOpen] = useState(false);

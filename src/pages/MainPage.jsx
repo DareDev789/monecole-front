@@ -22,12 +22,14 @@ import { configureApi } from '../services/api';
 import { UrlContext } from '../Contextes/UseUrl';
 import StudentManager from "../views/ElevesComp/StudentManager";
 import ClassManager from "../views/Classes/ClassManager";
+import { schoolYearApi } from '../services/api';
 
 
 function MainPage() {
     const { setShowLogout } = useContext(ShowContext);
     const navigate = useNavigate();
     const [showAllMenu, setShowAllMenu] = useState(false);
+    const [currentYear, setCurrentYear] = useState(null);
 
     const tokenString = localStorage.getItem("token");
     let token = JSON.parse(tokenString);
@@ -47,6 +49,18 @@ function MainPage() {
         configureApi(url, token);
     }, [url, token]);
 
+    useEffect(() => {
+        loadData();
+    }, []);
+
+    const loadData = async () => {
+        const [currentYearRes] = await Promise.all([
+            schoolYearApi.getCurrent()
+        ]);
+        setCurrentYear(currentYearRes.data);
+    };
+
+
     return (
         <>
             <div className="w-full">
@@ -61,12 +75,16 @@ function MainPage() {
                                 alt=""
                             />
                         </div>
+                        <div className="font-bold text-sm">
+                            Année Scolaire : {currentYear && currentYear?.name}
+                        </div>
                         <div className="flex items-center">
                             <div
                                 onClick={() => navigate(`/mon-profil`)}
                                 className="mr-2 hidden sm:block cursor-pointer">
                                 <span className="font-bold text-sm">{user?.name}</span>
                             </div>
+
                             <div>
                                 <Tippy
                                     content="menus"
@@ -106,54 +124,54 @@ function MainPage() {
             </div>
             <div className="container mx-auto flex flex-col md:flex-row mt-14 relative">
                 {showAllMenu && (
-                    <div className="w-full backdrop-blur-lg h-screen">
-                        <div className="bg-white text-gray-900 gap-2 space-y-4 absolute top-0 right-0 w-64 max-w-full z-[60] shaddow-xl">
+                    <>  <div className="absolute w-full h-full backdrop-blur-md top-0 left-0" />
+                        <div className="bg-white text-gray-900 gap-2 space-y-4 absolute top-0 right-0 w-96 max-w-full h-full z-[60] shaddow-xl">
                             <nav className="block space-y-2 w-full list-none">
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/dashboard`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/dashboard`) }}
                                 >
                                     Dashbord
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/personnels`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/personnels`) }}
                                 >
                                     Personnels
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/classes`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/classes`) }}
                                 >
                                     Classes
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/matieres`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/matieres`) }}
                                 >
                                     Matières
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/gestion-eleves`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/gestion-eleves`) }}
                                 >
                                     Gestion des élèves
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/gestion-notes`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/gestion-notes`) }}
                                 >
                                     Gestion des notes
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/bulletins`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/bulletins`) }}
                                 >
                                     Bulletins
                                 </li>
                                 <li
-                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 font-medium text-sm cursor-pointer"
-                                    onClick={() => navigate(`/paiements`)}
+                                    className="w-[48%] md:w-full p-2 rounded hover:bg-gray-900 hover:text-white font-medium text-sm cursor-pointer"
+                                    onClick={() => { setShowAllMenu(false); navigate(`/paiements`) }}
                                 >
                                     Paiements
                                 </li>
@@ -171,7 +189,7 @@ function MainPage() {
                         </li> */}
                             </nav>
                         </div>
-                    </div>
+                    </>
                 )}
                 <aside className={`hidden md:block bg-gray-800 text-white w-full md:w-1/6 p-4 overflow-auto max-h-[calc(100vh-3.6em)] scrollbar-thin`}>
                     <nav className="flex flex-wrap gap-2 md:block md:space-y-2 w-full list-none">
@@ -248,6 +266,7 @@ function MainPage() {
                         <Route path="/matieres" element={<MatieresManager />} />
                         <Route path="/view-one-matiere/:id" element={<VueOneSubject />} />
                         <Route path="/gestion-eleves" element={<StudentManager />} />
+                        <Route path="/gestion-eleves/page/:page?" element={<StudentManager />} />
                         <Route path="/mon-profil" element={<MonProfil />} />
                         <Route path="/preferences" element={<PreferencesManager />} />
                         <Route path="/paiements" element={<PaymentManager />} />

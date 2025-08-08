@@ -5,7 +5,8 @@ import { UrlContext } from "../../Contextes/UseUrl";
 import nProgress from "nprogress";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { Link, useSearchParams } from "react-router-dom";
+import { classApi } from '../../services/api';
+import ClassCard from "./ClassCard";
 
 export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
     const [selected, setSelected] = useState([]);
@@ -21,7 +22,7 @@ export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
 
         try {
             nProgress.start();
-            await classApi.getAll($id);
+            await classApi.delete(id);
             loadClasses();
         } catch (error) {
             console.error("Erreur lors de la suppression :", error);
@@ -33,39 +34,20 @@ export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
     return (
         <>
             <div className="mt-6">
-                <h2 className="font-bold text-xl mb-3">Liste des classes</h2>
-
                 {classes?.length === 0 ? (
                     <p className="text-sm text-gray-700 text-center mt-6">
                         <i>Aucune classe pour le moment !</i>
                     </p>
                 ) : (
-                    Array.isArray(classes) && classes.map((classe) => (
-                        <div
-                            key={classe.id}
-                            className="flex justify-between items-center border p-2 mb-2"
-                        >
-                            <div>
-                                <Link to={`/view-one-classe/${classe.id}`}>
-                                    <strong>{classe.name}</strong>
-                                </Link>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                        {Array.isArray(classes) && classes.map((classe) => (
+                            <div key={classe.id}>
+                                <ClassCard classe={classe}
+                                    onEdit={()=>onEdit(classe.id)}
+                                    handleDelete={()=>handleDelete(classe.id)} />
                             </div>
-                            <div>
-                                <button
-                                    className="bg-gray-800 text-white rounded px-3 py-1 mx-1"
-                                    onClick={() => onEdit(classe)}
-                                >
-                                    <FontAwesomeIcon icon={faEdit} />
-                                </button>
-                                <button
-                                    className="bg-red-500 text-white rounded px-3 py-1 mx-1"
-                                    onClick={() => handleDelete(classe.id)}
-                                >
-                                    <FontAwesomeIcon icon={faTrash} />
-                                </button>
-                            </div>
-                        </div>
-                    ))
+                        ))}
+                    </div>
                 )}
             </div>
         </>

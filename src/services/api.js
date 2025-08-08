@@ -49,11 +49,19 @@ export const classApi = {
 };
 
 export const studentApi = {
-    getAll: (params) => api.get('/students', { params }),
+    getAll: (page = 1, params = {}) => api.get(`/students?page=${page}`, { params }),
     getById: (id) => api.get(`/students/${id}`),
     create: (data) => api.post('/students', data),
     update: (id, data) => api.put(`/students/${id}`, data),
     delete: (id) => api.delete(`/students/${id}`)
+};
+
+export const enrollmentsApi = {
+    getAll: (page = 1, params = {}) => api.get(`/enrollments`, { params }),
+    getById: (id) => api.get(`/enrollments/${id}`),
+    create: (data) => api.post('/enrollments', data),
+    update: (id, data) => api.put(`/enrollments/${id}`, data),
+    delete: (id) => api.delete(`/enrollments/${id}`)
 };
 
 export default api;
