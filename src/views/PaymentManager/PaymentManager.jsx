@@ -1,7 +1,10 @@
 import { useEffect, useState } from 'react';
-import { PaiementApi } from '../../services/api';
-import Input from '../../Components/ui/Input';
+import { PaiementApi, enrollmentsApi, classApi } from '../../services/api';
 import Button from '../../Components/ui/Button';
+import MyFilter from './MyFilter';
+import Pagination from '../../Components/ui/Pagination';
+import Modal from '../../Components/ui/Modal';
+import PaiementEcolage from './PaiementEcolage';
 
 export default function PaymentManager() {
   const [payments, setPayments] = useState([]);
@@ -9,6 +12,25 @@ export default function PaymentManager() {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [lastPage, setLastPage] = useState(1);
+  const [showPopup, setShowPopup] = useState(false);
+
+  const [students, setStudents] = useState([]);
+  const [classes, setClasses] = useState([]);
+
+  const months = [
+    { value: 1, label: 'Janvier' },
+    { value: 2, label: 'Février' },
+    { value: 3, label: 'Mars' },
+    { value: 4, label: 'Avril' },
+    { value: 5, label: 'Mai' },
+    { value: 6, label: 'Juin' },
+    { value: 7, label: 'Juillet' },
+    { value: 8, label: 'Août' },
+    { value: 9, label: 'Septembre' },
+    { value: 10, label: 'Octobre' },
+    { value: 11, label: 'Novembre' },
+    { value: 12, label: 'Décembre' }
+  ];
 
   const fetchPayments = async (pageNumber = 1) => {
     setLoading(true);
@@ -24,6 +46,20 @@ export default function PaymentManager() {
       setLoading(false);
     }
   };
+
+  const fetchStudentsAndClasses = async () => {
+    try {
+      const [resStudents, resClasses] = await Promise.all([
+        enrollmentsApi.getAll({ noPagination: true }),
+        classApi.getAll({ noPagination: true })
+      ]);
+      setStudents(resStudents.data || []);
+      setClasses(resClasses.data.data || []);
+    } catch (err) {
+      console.error('Erreur chargement élèves/classes', err);
+    }
+  };
+
 
   const handleFilterChange = (e) => {
     setFilters(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -41,31 +77,64 @@ export default function PaymentManager() {
   };
 
   useEffect(() => {
+    fetchStudentsAndClasses();
     fetchPayments(page);
   }, []);
 
   return (
     <div className="p-6 mx-auto">
-      <form className="flex space-x-4 mb-4" onSubmit={handleSubmitFilter}>
-        <Input
-          label="Filtrer par élève (ID)"
-          name="student_id"
-          value={filters.student_id}
-          onChange={handleFilterChange}
-        />
-        <Input
-          label="Filtrer par classe (ID)"
-          name="class_id"
-          value={filters.class_id}
-          onChange={handleFilterChange}
-        />
-        <Input
-          label="Filtrer par mois (ex: 1-12)"
-          name="month"
-          value={filters.month}
-          onChange={handleFilterChange}
-        />
-        <Button className='bg-gray-800 hover:bg-gray-700' type="submit">Rechercher</Button>
+      <h2 className="block text-xl font-bold text-gray-700 mb-2" >Gestion des paiments</h2>
+      <div className='flex justify-end mb-4'>
+        <Button
+          type="button"
+          onClick={() => setShowPopup(true)}
+          className="bg-gray-800 hover:bg-gray-900"
+        >
+          Ajouter un paiement
+        </Button>
+      </div>
+      <form className="flex space-x-4 mb-4 items-end" onSubmit={handleSubmitFilter}>
+
+        {/* Select élèves */}
+        <MyFilter students={students}
+          filters={filters}
+          handleFilterChange={handleFilterChange} />
+
+        {/* Select classes */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1" >Classe</label>
+          <select
+            name="class_id"
+            value={filters.class_id}
+            onChange={handleFilterChange}
+            className="border p-2 rounded w-full"
+          >
+            <option value="">Toutes</option>
+            {classes.map(c => (
+              <option key={c.id} value={c.id}>{c.name}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* Select mois */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1" >Mois</label>
+          <select
+            name="month"
+            value={filters.month}
+            onChange={handleFilterChange}
+            className="border p-2 rounded w-full"
+          >
+            <option value="">Tous</option>
+            {months.map(m => (
+              <option key={m.value} value={m.value}>{m.label}</option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <Button className='bg-gray-800 hover:bg-gray-700' type="submit">Rechercher</Button>
+        </div>
       </form>
 
       {loading ? (
@@ -74,7 +143,7 @@ export default function PaymentManager() {
         </div>
       ) : (
         <>
-          <table className="w-full text-left border rounded">
+          <table className="w-full text-left border rounded my-4">
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-2">Étudiant</th>
@@ -96,7 +165,7 @@ export default function PaymentManager() {
                     <td className="p-2">{p.enrollment?.student?.first_name} {p.enrollment?.student?.last_name}</td>
                     <td className="p-2">{p.enrollment?.class?.name}</td>
                     <td className="p-2">{p.amount}</td>
-                    <td className="p-2">{p.month_paid}</td>
+                    <td className="p-2">{months.find(m => m.value === p.month_paid)?.label || p.month_paid}</td>
                     <td className="p-2">{p.payment_date}</td>
                     <td className="p-2">{p.type === 'monthly_fee' ? "Ecolage" : "Droit d'inscription"}</td>
                   </tr>
@@ -105,12 +174,15 @@ export default function PaymentManager() {
             </tbody>
           </table>
 
-          {/* Pagination simple */}
-          <div className="mt-4 flex justify-center space-x-4">
-            <Button disabled={page === 1} onClick={() => handlePageChange(page - 1)}>Précédent</Button>
-            <span>Page {page} / {lastPage}</span>
-            <Button disabled={page === lastPage} onClick={() => handlePageChange(page + 1)}>Suivant</Button>
-          </div>
+          <Pagination currentPage={page}
+            totalPages={lastPage}
+            onPageChange={() => handlePageChange(page)} />
+
+          <Modal isOpen={showPopup }
+            setIsOpen={()=>setShowPopup(false)}
+            title="Ajouter un paiement">
+            <PaiementEcolage />
+          </Modal>
         </>
       )}
     </div>

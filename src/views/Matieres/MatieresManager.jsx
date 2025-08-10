@@ -105,7 +105,6 @@ export default function MatieresManager() {
             ) : (
                 <>
                     <div className="w-full p-6 bg-white rounded-md mt-4 min-h-screen">
-
                         <MatieresList key={refreshKey} onEdit={handleEdit} handleDelete={handleDelete} NewSubject={NewSubject} subjects={subjects} fetchSubjects={fetchSubjects} />
                         {pagination.total > pagination.per_page && (
                             <div className="mt-6">
