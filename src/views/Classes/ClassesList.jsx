@@ -7,15 +7,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { classApi } from '../../services/api';
 import ClassCard from "./ClassCard";
+import EmptyState from "../../Components/ui/EmptyState";
 
 export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
     const [selected, setSelected] = useState([]);
     const { url } = useContext(UrlContext);
-
-
-    useEffect(() => {
-        loadClasses();
-    }, []);
 
     const handleDelete = async (id) => {
         if (!window.confirm("Supprimer cette classe ?")) return;
@@ -35,21 +31,23 @@ export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
         <>
             <div className="mt-6">
                 {classes?.length === 0 ? (
-                    <p className="text-sm text-gray-700 text-center mt-6">
-                        <i>Aucune classe pour le moment !</i>
-                    </p>
+                    <EmptyState
+                        title="Aucune classe trouvée"
+                        description="Commencez par ajouter une nouvelle classe"
+                    />
                 ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         {Array.isArray(classes) && classes.map((classe) => (
                             <div key={classe.id}>
                                 <ClassCard classe={classe}
-                                    onEdit={()=>onEdit(classe.id)}
-                                    handleDelete={()=>handleDelete(classe.id)} />
+                                    onEdit={() => onEdit(classe)}
+                                    handleDelete={() => handleDelete(classe.id)} />
                             </div>
                         ))}
                     </div>
                 )}
             </div>
+
         </>
     );
 }

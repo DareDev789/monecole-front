@@ -17,7 +17,7 @@ export default function StudentForm({ initialData, onSubmit, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[90vh] overflow-auto">
         <Controller
           name="first_name"
           control={control}
@@ -103,10 +103,10 @@ export default function StudentForm({ initialData, onSubmit, onCancel }) {
       />
 
       <div className="flex justify-end space-x-3 pt-4">
-        <Button type="button" variant="secondary" onClick={onCancel}>
+        <Button type="button" variant="secondary" onClick={onCancel} className='bg-gray-400 hover:bg-gray-500'>
           Annuler
         </Button>
-        <Button type="submit">
+        <Button type="submit" className='bg-gray-700 hover:bg-gray-900'>
           Enregistrer
         </Button>
       </div>

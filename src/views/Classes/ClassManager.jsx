@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { classApi } from '../../services/api'; 
+import { classApi } from '../../services/api';
 import ClassList from './ClassesList';
 import ClassForm from './ClassesForm';
 import Modal from '../../Components/ui/Modal';
@@ -27,46 +27,54 @@ export default function ClassManager() {
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Gestion des Classes</h2>
-        <Button onClick={() => {
-          setEditingClass(null);
-          setIsFormOpen(true);
-        }}>
-          Créer une Classe
-        </Button>
-      </div>
+    <>
+      {loading ? (
+        <div className="flex justify-center w-full py-8">
+          <div className="animate-spin rounded-full h-12 mx-auto w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : (
+        <div className="space-y-6 bg-white p-4 shadow-sm">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Gestion des Classes</h2>
+            <Button onClick={() => {
+              setEditingClass(null);
+              setIsFormOpen(true);
+            }} className='bg-gray-700 hover:bg-gray-900'>
+              Créer une Classe
+            </Button>
+          </div>
 
-      <ClassList
-        classes={classes}
-        loading={loading}
-        onEdit={(classItem) => {
-          setEditingClass(classItem);
-          setIsFormOpen(true);
-        }}
-        loadClasses={loadClasses}
-      />
+          <ClassList
+            classes={classes}
+            loading={loading}
+            onEdit={(classItem) => {
+              setEditingClass(classItem);
+              setIsFormOpen(true);
+            }}
+            loadClasses={loadClasses}
+          />
 
-      <Modal
-        isOpen={isFormOpen}
-        setIsOpen={() => setIsFormOpen(false)}
-        title={editingClass ? 'Modifier Classe' : 'Nouvelle Classe'}
-      >
-        <ClassForm
-          initialData={editingClass || {}}
-          onSubmit={async (data) => {
-            if (editingClass) {
-              await classApi.update(editingClass.id, data);
-            } else {
-              await classApi.create(data);
-            }
-            loadClasses();
-            setIsFormOpen(false);
-          }}
-          onCancel={() => setIsFormOpen(false)}
-        />
-      </Modal>
-    </div>
+          <Modal
+            isOpen={isFormOpen}
+            setIsOpen={() => setIsFormOpen(false)}
+            title={editingClass ? 'Modifier Classe' : 'Nouvelle Classe'}
+          >
+            <ClassForm
+              initialData={editingClass || {}}
+              onSubmit={async (data) => {
+                if (editingClass) {
+                  await classApi.update(editingClass.id, data);
+                } else {
+                  await classApi.create(data);
+                }
+                loadClasses();
+                setIsFormOpen(false);
+              }}
+              onCancel={() => setIsFormOpen(false)}
+            />
+          </Modal>
+        </div>
+      )}
+    </>
   );
 }

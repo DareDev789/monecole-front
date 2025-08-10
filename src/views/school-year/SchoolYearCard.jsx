@@ -4,13 +4,14 @@ import { format, parseISO } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 const SchoolYearCard = ({ schoolYear, onEdit, onDelete }) => {
+  const is_current = schoolYear?.is_current === 1;
   return (
     <div className="bg-white shadow rounded-lg overflow-hidden">
       <div className="px-4 py-5 sm:px-6 flex justify-between items-start">
         <div>
           <h3 className="text-lg leading-6 font-medium text-gray-900">
             {schoolYear.name}
-            {schoolYear.is_current && (
+            {is_current && (
               <span className="ml-2 inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
                 Actuelle
               </span>

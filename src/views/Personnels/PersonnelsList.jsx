@@ -1,79 +1,64 @@
 import React, { useContext, useEffect, useState } from "react";
 import axios from "axios";
-import { UrlContext } from "../../Contextes/UseUrl";
 import nProgress from "nprogress";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTrash } from "@fortawesome/free-solid-svg-icons";
-import { useSearchParams } from "react-router-dom";
+import Button from "../../Components/ui/Button";
+import EmptyState from "../../Components/ui/EmptyState";
+import { motion, AnimatePresence } from "framer-motion";
+import PersonnalCard from "./PersonnalCard";
+import Notiflix from "notiflix";
+import { personnelsApi } from "../../services/api";
 
-const PersonnelsList = ({ onEdit }) => {
-  const [employes, setEmployes] = useState([]);
-  const [pagination, setPagination] = useState({});
+const PersonnelsList = ({ employes, onEdit, NewPersonnal, fetchEmployes }) => {
   const [selected, setSelected] = useState([]);
-  const { url } = useContext(UrlContext);
-  const [searchParams, setSearchParams] = useSearchParams();
-
-  const page = parseInt(searchParams.get("page")) || 1;
-
-  const fetchEmployes = async () => {
-    const tokenString = localStorage.getItem("token");
-    let token = JSON.parse(tokenString);
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
-    try {
-      nProgress.start();
-      const res = await axios.get(`${url}employees?page=${page}`, { headers });
-      setEmployes(res.data.data || []);
-      setPagination(res.data);
-    } catch (err) {
-      console.error("Erreur lors du chargement des employés :", err);
-    } finally {
-      nProgress.done();
-    }
-  };
-
-  useEffect(() => {
-    fetchEmployes();
-  }, [page]);
 
   const handleDelete = async (id) => {
-    if (!window.confirm("Supprimer cet employé ?")) return;
-    const tokenString = localStorage.getItem("token");
-    let token = JSON.parse(tokenString);
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
     try {
-      nProgress.start();
-      await axios.delete(`${url}employees/${id}`, { headers });
-      fetchEmployes();
+      Notiflix.Confirm.show(
+        'Supprimer l\'employé',
+        `Voulez-vous vraiment supprimer cet employé ?`,
+        'Oui, Supprimer',
+        'Annuler',
+        async () => {
+          try {
+            nProgress.start()
+            await personnelsApi.delete(id);
+            Notiflix.Notify.success('Employé supprimé avec succès');
+            fetchEmployes();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            nProgress.done();
+          }
+        }
+      );
     } catch (error) {
-      console.error("Erreur lors de la suppression :", error);
-    } finally {
-      nProgress.done();
+      Notiflix.Notify.failure('Une erreur est survenue');
     }
   };
 
   const handleDeleteMany = async () => {
-    if (!window.confirm("Supprimer les employés sélectionnés ?")) return;
-    const tokenString = localStorage.getItem("token");
-    let token = JSON.parse(tokenString);
-    const headers = {
-      Authorization: `Bearer ${token}`,
-    };
-
+    const ids = selected;
     try {
-      nProgress.start();
-      await axios.post(`${url}employees/destroy-many`, { ids: selected }, { headers });
-      setSelected([]);
-      fetchEmployes();
+      Notiflix.Confirm.show(
+        'Supprimer l\'employé',
+        `Voulez-vous vraiment supprimer les employés séléctionnés ?`,
+        'Oui, Supprimer',
+        'Annuler',
+        async () => {
+          try {
+            nProgress.start()
+            await personnelsApi.DeleteMany(ids);
+            Notiflix.Notify.success('Employés supprimés avec succès');
+            fetchEmployes();
+          } catch (error) {
+            console.log(error);
+          } finally {
+            nProgress.done();
+          }
+        }
+      );
     } catch (error) {
-      console.error("Erreur lors de la suppression multiple :", error);
-    } finally {
-      nProgress.done();
+      Notiflix.Notify.failure('Une erreur est survenue');
     }
   };
 
@@ -83,13 +68,18 @@ const PersonnelsList = ({ onEdit }) => {
     );
   };
 
-  const goToPage = (pageNumber) => {
-    setSearchParams({ page: pageNumber });
-  };
-
   return (
-    <div className="mt-6">
-      <h2 className="font-bold text-xl mb-3">Liste des employés</h2>
+    <div className="">
+      <h2 className="font-bold text-2xl mb-3">Liste des employés</h2>
+      <div className="flex items-end justify-end">
+        <Button
+          type="button"
+          onClick={NewPersonnal}
+          className="bg-gray-800 hover:bg-gray-900"
+        >
+          Ajouter un employé
+        </Button>
+      </div>
 
       {selected.length > 0 && (
         <button
@@ -101,76 +91,27 @@ const PersonnelsList = ({ onEdit }) => {
       )}
 
       {employes?.length === 0 ? (
-        <p className="text-sm text-gray-700 text-center mt-6">
-          <i>Aucun employé pour le moment !</i>
-        </p>
+        <EmptyState
+          title="Aucun employé trouvé"
+          description={`Commencez par ajouter un emplyé.`}
+        />
       ) : (
-        Array.isArray(employes) && employes.map((employe) => (
-          <div
-            key={employe.id}
-            className="flex justify-between items-center border p-2 mb-2"
-          >
-            <div>
-              <input
-                type="checkbox"
-                className="mr-2"
-                checked={selected.includes(employe.id)}
-                onChange={() => toggleSelect(employe.id)}
-              />
-              <strong>{employe.first_name} {employe.last_name}</strong>
-              <p className="text-sm text-gray-600">{employe.position}</p>
-            </div>
-            <div>
-              <button
-                className="bg-gray-800 text-white rounded px-3 py-1 mx-1"
-                onClick={() => onEdit(employe)}
-              >
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              <button
-                className="bg-red-500 text-white rounded px-3 py-1 mx-1"
-                onClick={() => handleDelete(employe.id)}
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </button>
-            </div>
-          </div>
-        ))
+        <motion.div
+          layout
+          className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4"
+        >
+          <AnimatePresence>
+            {employes.map((employe) => (
+              <PersonnalCard key={employe.id} employe={employe}
+                selected={selected}
+                toggleSelect={toggleSelect}
+                onEdit={onEdit}
+                handleDelete={handleDelete} />
+            ))}
+          </AnimatePresence>
+        </motion.div>
       )}
 
-      {/* PAGINATION */}
-      <div className="flex justify-center mt-6 gap-2">
-        {pagination.current_page > 1 && (
-          <button
-            className="px-3 py-1 bg-gray-200 rounded"
-            onClick={() => goToPage(pagination.current_page - 1)}
-          >
-            Précédent
-          </button>
-        )}
-
-        {Array.from({ length: pagination.last_page }, (_, i) => (
-          <button
-            key={i}
-            onClick={() => goToPage(i + 1)}
-            className={`px-3 py-1 rounded ${pagination.current_page === i + 1
-              ? "bg-blue-500 text-white"
-              : "bg-gray-100"
-              }`}
-          >
-            {i + 1}
-          </button>
-        ))}
-
-        {pagination.current_page < pagination.last_page && (
-          <button
-            className="px-3 py-1 bg-gray-200 rounded"
-            onClick={() => goToPage(pagination.current_page + 1)}
-          >
-            Suivant
-          </button>
-        )}
-      </div>
     </div>
   );
 };

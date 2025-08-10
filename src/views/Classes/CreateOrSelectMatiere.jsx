@@ -1,100 +1,125 @@
-import { useContext, useEffect, useState } from "react"
-import axios from "axios";
-import { UrlContext } from "../../Contextes/UseUrl";
+import { classApi, SubjectsApi } from '../../services/api';
+import Button from "../../Components/ui/Button";
+import { useEffect, useState } from 'react';
+import MatieresForm from '../Matieres/MatieresForm';
+import Select from '../../Components/ui/Select';
 
 
-export default function CreateOrSelectMatiere({ setNewSubject, newSubject, saveSubject, matieresChoosed }) {
-    const [isCreate, setIsCreate] = useState(false);
-    const { url } = useContext(UrlContext);
+export default function CreateOrSelectMatiere({ classe, setShowPopup, loadClasse, isCreate, setIsCreate }) {
     const [matieres, setMatieres] = useState([]);
     const [selectedSubject, setSelectedSubject] = useState(null);
+    const [loading, setLoading] = useState(false);
 
-    const fetchMatieres = async () => {
-        const tokenString = localStorage.getItem("token");
-        let token = JSON.parse(tokenString);
-        const headers = {
-            Authorization: `Bearer ${token}`,
-        };
-
+    const fetchMatiere = async () => {
         try {
-            const res = await axios.get(`${url}subjects`, { headers });
-            setMatieres(res.data.data || []);
+            setLoading(true);
+            const res = await SubjectsApi.getOutOfClass(classe.id);
+            setMatieres(res.data || []);
         } catch (err) {
-            console.error("Erreur lors du chargement des classes :", err);
+            console.error("Erreur lors du chargement de la classe :", err);
+        } finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
-        fetchMatieres();
-    }, [matieresChoosed]);
+        fetchMatiere();
+    }, []);
 
+    const handleAddSubject = () => {
+        const matiereChoisie = matieres.find(m => m.id === Number(selectedSubject));
+        if (!matiereChoisie) return;
 
-    return (
-        <>
-            <div className="flex items-center gap-2 mt-8">
-                <button disabled={isCreate} onClick={() => setIsCreate(true)} className={`${isCreate ? "bg-gray-300 text-gray-900" : "bg-gray-900 text-white"} text-sm px-5 py-1`}>Créer une nouvelle</button>
-                <button disabled={!isCreate} onClick={() => setIsCreate(false)} className={`${isCreate ? "bg-gray-900 text-white" : "bg-gray-300 text-gray-900"} text-sm px-5 py-1`}>Choisir parmi les existantes</button>
-            </div>
-            {isCreate ? (
-                <>
-                    <h2 className="text-md font-semibold mt-6 mb-2">Nouvelle matière pour cette classe ? </h2>
-                    <div className="flex items-center gap-2 mb-4">
-                        <input
-                            type="text"
-                            className="border px-2 py-1"
-                            placeholder="Nom de la matière"
-                            value={newSubject.name}
-                            onChange={(e) => setNewSubject({ ...newSubject, name: e.target.value })}
-                        />
-                        <input
-                            type="number"
-                            className="border px-2 py-1 w-24"
-                            value={newSubject.coefficient}
-                            onChange={(e) => setNewSubject({ ...newSubject, coefficient: e.target.value })}
-                        />
-                        <button
-                            className="bg-blue-600 text-white px-2 py-1 rounded"
-                            onClick={() => saveSubject(newSubject)}
-                        >
-                            Ajouter
-                        </button>
-                    </div>
-                </>
-            ) : (
-                <>
-                    <h2 className="text-md font-semibold mt-6 mb-2">Choisir une matière existante</h2>
+        saveSubject({
+            id: matiereChoisie.id,
+            name: matiereChoisie.name,
+            coefficient: matiereChoisie.coefficient,
+        });
+        setSelectedSubject(null);
+    };
 
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            Matières
-                        </label>
-                        <select
-                            className="border px-3 py-2 text-sm rounded w-full"
-                            onChange={(e) => {
-                                const selectedSubjectTemp = matieres.find(cls => cls.id === parseInt(e.target.value));
-                                setSelectedSubject(selectedSubjectTemp);
+    const saveSubject = async (data) => {
+        setLoading(true);
+        const formData = {
+            name: data.name,
+            coefficient: data.coefficient,
+            classes: [
+                {
+                    id: classe.id,
+                    coefficient: data.coefficient,
+                },
+            ],
+        }
+        await SubjectsApi.update(data.id, formData);
+        await fetchMatiere();
+        await loadClasse();
+        setLoading(false);
+    }
+
+        return (
+            <>
+                <div className="flex items-center gap-2 my-4 justify-end">
+                    <Button
+                        className="bg-green-700"
+                        onClick={() => setIsCreate(!isCreate)}>
+                        {isCreate ? 'Choisir parmi les existantes' : 'Créer une nouvelle'}
+                    </Button>
+                </div>
+                {isCreate ? (
+                    <>
+                        <MatieresForm
+                            initialData={{}}
+                            onSubmit={async (data) => {
+                                const formData = {
+                                    name: data.name,
+                                    coefficient: data.coefficient,
+                                    classes: [
+                                        {
+                                            id: classe.id,
+                                            coefficient: data.coefficient,
+                                        },
+                                    ],
+                                };
+
+                                await SubjectsApi.create(formData);
+
+                                loadClasse();
+                                setShowPopup(false);
                             }}
-                        >
-                            <option value="">-- Choisir une matière --</option>
-                            {matieres
-                                .filter(cls => !matieresChoosed.some(c => c.id === cls.id))
-                                .map(cls => (
-                                    <option key={cls.id} value={cls.id}>
-                                        {cls.name}{' (Coef : '}{cls.coefficient}{'}'}
-                                    </option>
-                                ))}
-                        </select>
-                        {selectedSubject && (
-                            <button className="mt-4 px-5 py-1 bg-gray-900 text-white"
-                                onClick={() => {
-                                    saveSubject({ ...newSubject, id: selectedSubject.id, name: selectedSubject.name, coefficient: selectedSubject.coefficient });
-                                    setSelectedSubject(null)
-                                }}>{'>> '}Ajouter {selectedSubject.name}</button>
+                            onCancel={() => setShowPopup(false)}
+                        />
+                    </>
+                ) : (
+                    <>
+                        {loading ? (
+                            <div className="flex justify-center w-full py-8">
+                                <div className="animate-spin rounded-full h-12 mx-auto w-12 border-t-2 border-b-2 border-indigo-500"></div>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="mb-4">
+                                    <Select
+                                        label="Matières"
+                                        name="subject"
+                                        value={selectedSubject}
+                                        onChange={(e) => setSelectedSubject(e.target.value)}
+                                        options={[
+                                            { value: "", label: "Sélectionner une matière" },
+                                            ...matieres.map((matiere) => ({
+                                                value: matiere.id,
+                                                label: matiere.name
+                                            }))
+                                        ]} />
+                                    {selectedSubject && (
+                                        <button className="mt-4 px-5 py-1 bg-gray-900 text-white"
+                                            onClick={handleAddSubject}>{'>> '}Ajouter</button>
+                                    )}
+                                </div>
+                            </>
                         )}
-                    </div>
-                </>
+                    </>
 
-            )}
-        </>
-    )
-}
+                )}
+            </>
+        )
+    }

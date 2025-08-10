@@ -10,7 +10,7 @@ export default function AnnualReportManager() {
     enrollment_id: "",
     school_year_id: "",
     final_average: "",
-    annual_rank: "",
+    annual_rank: "", 
     total_students: "",
   });
   const [editingReport, setEditingReport] = useState(null);

@@ -1,62 +1,70 @@
-import { useContext, useEffect, useState } from "react"
+import { useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { UrlContext } from "../../Contextes/UseUrl";
 
 export default function SelectClasse({ newClass, setNewClass, saveClasse, classesChoosed }) {
-    const { url } = useContext(UrlContext);
-    const [classes, setClasses] = useState([]);
-    const [selectedClasse, setSelectedClasse] = useState(null);
+  const { url } = useContext(UrlContext);
+  const [classes, setClasses] = useState([]);
 
-    const fetchClasses = async () => {
-        const tokenString = localStorage.getItem("token");
-        let token = JSON.parse(tokenString);
-        const headers = {
-            Authorization: `Bearer ${token}`,
-        };
+  const fetchClasses = async () => {
+    const tokenString = localStorage.getItem("token");
+    let token = JSON.parse(tokenString);
+    const headers = { Authorization: `Bearer ${token}` };
 
-        try {
-            const res = await axios.get(`${url}classes`, { headers });
-            setClasses(res.data.data || []);
-        } catch (err) {
-            console.error("Erreur lors du chargement des classes :", err);
-        }
-    };
+    try {
+      const res = await axios.get(`${url}classes`, { headers });
+      setClasses(res.data.data || []);
+    } catch (err) {
+      console.error("Erreur lors du chargement des classes :", err);
+    }
+  };
 
-    useEffect(() => {
-        fetchClasses();
-    }, [classesChoosed]);
-    return (
-        <>
-            <h2 className="text-md font-semibold mt-6 mb-2">Choisir une classe</h2>
+  useEffect(() => {
+    fetchClasses();
+  }, [classesChoosed]);
 
-            <div className="mb-4">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Classes
-                </label>
-                <select
-                    className="border px-3 py-2 text-sm rounded w-full"
-                    onChange={(e) => {
-                        const selectedClassTemp = classes.find(cls => cls.id === parseInt(e.target.value));
-                        setNewClass(selectedClassTemp);
-                    }}
-                >
-                    <option value="">-- Choisir une matière --</option>
-                    {classes
-                        .filter(cls => !classesChoosed.some(c => c.id === cls.id))
-                        .map(cls => (
-                            <option key={cls.id} value={cls.id}>
-                                {cls.name}
-                            </option>
-                        ))}
-                </select>
-                {newClass && (
-                    <button className="mt-4 px-5 py-1 bg-gray-900 text-white"
-                        onClick={() => {
-                            saveClasse({ ...newClass, id: newClass.id, name: newClass.name });
-                            setNewClass(null)
-                        }}>{'>> '}Ajouter {newClass.name}</button>
-                )}
-            </div>
-        </>
-    )
+  const handleAdd = () => {
+    if (newClass && newClass.id) {
+      saveClasse(newClass);
+      setNewClass(null);
+    }
+  };
+
+  return (
+    <div className="max-w-md">
+      <h2 className="text-lg font-semibold mb-3 text-gray-800">Ajouter une classe</h2>
+      <select
+        className="w-full rounded-md border border-gray-300 px-4 py-2 text-gray-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition"
+        value={newClass?.id || ""}
+        onChange={(e) => {
+          const selectedId = parseInt(e.target.value);
+          const selectedClassTemp = classes.find((cls) => cls.id === selectedId);
+          setNewClass(selectedClassTemp || null);
+        }}
+      >
+        <option value="" disabled>
+          -- Sélectionner une classe disponible --
+        </option>
+        {classes
+          .filter((cls) => !classesChoosed.some((c) => c.id === cls.id))
+          .map((cls) => (
+            <option key={cls.id} value={cls.id}>
+              {cls.name}
+            </option>
+          ))}
+      </select>
+
+      <button
+        onClick={handleAdd}
+        disabled={!newClass || !newClass.id}
+        className={`mt-4 w-full rounded-md px-4 py-2 font-semibold text-white transition ${
+          newClass && newClass.id
+            ? "bg-indigo-600 hover:bg-indigo-700"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+      >
+        Ajouter {newClass?.name || ""}
+      </button>
+    </div>
+  );
 }

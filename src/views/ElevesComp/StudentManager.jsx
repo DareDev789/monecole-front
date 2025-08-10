@@ -62,95 +62,102 @@ export default function StudentManager() {
 
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold">Gestion des Étudiants</h2>
-        <Button onClick={() => {
-          setSelectedStudent(null);
-          setIsFormOpen(true);
-        }}>
-          Ajouter un Étudiant
-        </Button>
-      </div>
+    <>
+      {loading ? (
+        <div className="flex justify-center w-full py-8">
+          <div className="animate-spin rounded-full h-12 mx-auto w-12 border-t-2 border-b-2 border-indigo-500"></div>
+        </div>
+      ) : (
+        <div className="space-y-6">
+          <div className="flex justify-between items-center">
+            <h2 className="text-2xl font-bold">Gestion des Étudiants</h2>
+            <Button onClick={() => {
+              setSelectedStudent(null);
+              setIsFormOpen(true);
+            }} className='bg-gray-500 hover:bg-gray-600'>
+              Ajouter un Étudiant
+            </Button>
+          </div>
 
-      <StudentList
-        students={students}
-        loading={loading}
-        currentYear={currentYear}
-        onEdit={(student) => {
-          setSelectedStudent(student);
-          setIsFormOpen(true);
-        }}
-        onEnroll={handleEnroll}
-        loadData={loadData}
-      />
-
-      <Modal
-        isOpen={isFormOpen}
-        setIsOpen={() => setIsFormOpen(false)}
-        title={selectedStudent ? 'Modifier Étudiant' : 'Nouvel Étudiant'}
-      >
-        <StudentForm
-          initialData={selectedStudent || {}}
-          onSubmit={async (data) => {
-            if (selectedStudent) {
-              await studentApi.update(selectedStudent.id, data);
-            } else {
-              await studentApi.create(data);
-            }
-            loadData();
-            setIsFormOpen(false);
-          }}
-          onCancel={() => setIsFormOpen(false)}
-        />
-      </Modal>
-
-      <Modal
-        isOpen={isEnrollFormOpen}
-        setIsOpen={() => setIsEnrollFormOpen(false)}
-        title={`Inscrire ${selectedStudent?.first_name} ${selectedStudent?.last_name}`}
-      >
-        <EnrollmentForm
-          student={selectedStudent}
-          currentYear={currentYear}
-          onSubmit={async (data) => {
-            try {
-              await schoolYearApi.enrollStudent(
-                selectedStudent.id,
-                data.class_id,
-                data.registration_fee_paid
-              );
-              Notiflix.Notify.success("Inscription réussie !");
-              loadData();
-              setIsEnrollFormOpen(false);
-            } catch (error) {
-              console.error(error);
-              if (error.response?.data?.message) {
-                Notiflix.Notify.failure(error.response.data.message);
-              } else if (error.response?.data?.errors) {
-                // Affiche les erreurs de validation
-                const messages = Object.values(error.response.data.errors)
-                  .flat()
-                  .join("\n");
-                Notiflix.Notify.failure(messages);
-              } else {
-                Notiflix.Notify.failure("Une erreur s'est produite.");
-              }
-            }
-          }}
-          onCancel={() => setIsEnrollFormOpen(false)}
-        />
-      </Modal>
-      {pagination.total > pagination.per_page && (
-        <div className="mt-6">
-          <Pagination
-            currentPage={pagination.current_page}
-            totalPages={Math.ceil(pagination.total / pagination.per_page)}
-            onPageChange={handlePageChange}
+          <StudentList
+            students={students}
+            loading={loading}
+            currentYear={currentYear}
+            onEdit={(student) => {
+              setSelectedStudent(student);
+              setIsFormOpen(true);
+            }}
+            onEnroll={handleEnroll}
+            loadData={loadData}
           />
+
+          <Modal
+            isOpen={isFormOpen}
+            setIsOpen={() => setIsFormOpen(false)}
+            title={selectedStudent ? 'Modifier Étudiant' : 'Nouvel Étudiant'}
+          >
+            <StudentForm
+              initialData={selectedStudent || {}}
+              onSubmit={async (data) => {
+                if (selectedStudent) {
+                  await studentApi.update(selectedStudent.id, data);
+                } else {
+                  await studentApi.create(data);
+                }
+                loadData();
+                setIsFormOpen(false);
+              }}
+              onCancel={() => setIsFormOpen(false)}
+            />
+          </Modal>
+
+          <Modal
+            isOpen={isEnrollFormOpen}
+            setIsOpen={() => setIsEnrollFormOpen(false)}
+            title={`Inscrire ${selectedStudent?.first_name} ${selectedStudent?.last_name}`}
+          >
+            <EnrollmentForm
+              student={selectedStudent}
+              currentYear={currentYear}
+              onSubmit={async (data) => {
+                try {
+                  await schoolYearApi.enrollStudent(
+                    selectedStudent.id,
+                    data.class_id,
+                    data.registration_fee_paid
+                  );
+                  Notiflix.Notify.success("Inscription réussie !");
+                  loadData();
+                  setIsEnrollFormOpen(false);
+                } catch (error) {
+                  console.error(error);
+                  if (error.response?.data?.message) {
+                    Notiflix.Notify.failure(error.response.data.message);
+                  } else if (error.response?.data?.errors) {
+                    // Affiche les erreurs de validation
+                    const messages = Object.values(error.response.data.errors)
+                      .flat()
+                      .join("\n");
+                    Notiflix.Notify.failure(messages);
+                  } else {
+                    Notiflix.Notify.failure("Une erreur s'est produite.");
+                  }
+                }
+              }}
+              onCancel={() => setIsEnrollFormOpen(false)}
+            />
+          </Modal>
+          {pagination.total > pagination.per_page && (
+            <div className="mt-6">
+              <Pagination
+                currentPage={pagination.current_page}
+                totalPages={Math.ceil(pagination.total / pagination.per_page)}
+                onPageChange={handlePageChange}
+              />
+            </div>
+          )}
         </div>
       )}
-
-    </div>
+    </>
   );
 }

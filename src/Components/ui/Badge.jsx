@@ -30,14 +30,14 @@ const roundedStyles = {
 export default function Badge({
   variant = 'primary',
   size = 'sm',
-  rounded = 'full',
+  rounded = 'sm',
   text,
   icon: Icon,
   className = '',
   onClick,
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center font-medium whitespace-nowrap';
+  const baseStyles = 'inline-flex items-center font-medium';
 
   return (
     <span

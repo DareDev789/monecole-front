@@ -5,6 +5,7 @@ import Button from './Button';
 export default function EmptyState({
   title = 'Aucun élément trouvé',
   description = 'Essayez de modifier vos critères de recherche ou de créer un nouvel élément',
+  action
 }) {
 
   return (
@@ -12,7 +13,7 @@ export default function EmptyState({
       
       <h3 className="mt-4 text-lg font-medium text-gray-900">{title}</h3>
       <p className="mt-2 text-sm text-gray-500 max-w-md">{description}</p>
-      {/* {action && (
+      {action && (
         <div className="mt-6">
           <Button
             onClick={action}
@@ -21,8 +22,8 @@ export default function EmptyState({
           >
             {actionLabel}
           </Button>
-        </div>
-      )} */}
+        </div> 
+      )}
     </div>
   );
 }
