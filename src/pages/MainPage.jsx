@@ -6,6 +6,7 @@ import { ShowContext } from "../Contextes/UseShow";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { Route, Routes, useNavigate } from "react-router-dom";
 import Dashboard from '../views/Dashboard/Dashboard';
+import StudentModal from "../views/ElevesComp/StudentModal";
 
 import PersonnelsManager from '../views/Personnels/PersonnelsManager';
 
@@ -84,6 +85,7 @@ function MainPage() {
 
     return (
         <>
+            <StudentModal />
             <div className="w-full">
                 {/* Header fixe */}
                 <header className={`w-full shadow-lg px-4 py-2 fixed top-0 z-50 text-neutral-950 bg-white`}>

@@ -37,6 +37,7 @@ const SchoolYearList = ({ schoolYears, loading, error, onCreate, onUpdate, onDel
           Gestion des années scolaires
         </h2>
         <Button
+          className='bg-gray-700'
           onClick={() => {
             setCurrentSchoolYear(null);
             setIsFormOpen(true);

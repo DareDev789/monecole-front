@@ -56,7 +56,7 @@ export default function StudentCardSimple({ student, enrolledID }) {
       </div>
 
       <div className="bg-gray-50 px-4 py-2 sm:px-6 flex justify-end space-x-2">
-        <Button size="sm" variant="secondary" onClick={() => onDelete(enrolledID)}>
+        <Button className='bg-red-600' size="sm" variant="secondary" onClick={() => onDelete(enrolledID)}>
           Retirer
         </Button>
       </div>

@@ -1,7 +1,8 @@
 import { Dialog, Transition } from "@headlessui/react";
 import { Fragment } from "react";
+import { XMarkIcon } from "@heroicons/react/24/outline";
 
-export default function Modal({ isOpen, setIsOpen, title, children }) {
+export default function Modal({ isOpen, setIsOpen, title, width = 'max-w-xl', children }) {
   return (
     <Transition appear show={isOpen} as={Fragment}>
       <Dialog as="div" className="relative z-50" onClose={setIsOpen}>
@@ -28,10 +29,24 @@ export default function Modal({ isOpen, setIsOpen, title, children }) {
               leaveFrom="opacity-100 scale-100"
               leaveTo="opacity-0 scale-95"
             >
-              <Dialog.Panel className="w-full max-w-xl max-h-[90vh] overflow-auto transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
-                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900">
+              <Dialog.Panel
+                className={`${width} relative w-full max-h-[100vh] overflow-auto transform rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all`}
+              >
+                {/* Bouton de fermeture */}
+                <button
+                  type="button"
+                  onClick={() => setIsOpen(false)}
+                  className="absolute top-3 right-3 rounded-full p-2 text-red-500 hover:bg-red-100 hover:text-red-700 focus:outline-none"
+                >
+                  <XMarkIcon className="h-5 w-5" />
+                </button>
+
+                {/* Titre */}
+                <Dialog.Title className="text-lg font-medium leading-6 text-gray-900 pr-8">
                   {title}
                 </Dialog.Title>
+
+                {/* Contenu */}
                 <div className="mt-4">{children}</div>
               </Dialog.Panel>
             </Transition.Child>

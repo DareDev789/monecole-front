@@ -6,13 +6,16 @@ import App from './App.jsx'
 import { ShowContextProvider } from "./Contextes/UseShow.jsx";
 import { UrlContextProvider } from "./Contextes/UseUrl.jsx";
 import { BrowserRouter } from "react-router-dom";
+import { StudentProvider } from './Contextes/StudentContext.jsx';
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
     <BrowserRouter>
       <UrlContextProvider>
         <ShowContextProvider>
-          <App />
+          <StudentProvider>
+            <App />
+          </StudentProvider>
         </ShowContextProvider>
       </UrlContextProvider>
     </BrowserRouter>

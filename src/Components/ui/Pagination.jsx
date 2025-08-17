@@ -54,7 +54,7 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => {
             {page}
           </button>
         ))}
-      </div>
+      </div> 
       
       <div className="-mt-px flex w-0 flex-1 justify-end">
         <button

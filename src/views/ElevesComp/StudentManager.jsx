@@ -104,7 +104,7 @@ export default function StudentManager() {
                 } else {
                   await studentApi.create(data);
                 }
-                loadData();
+                loadData(currentPage);
                 setIsFormOpen(false);
               }}
               onCancel={() => setIsFormOpen(false)}
@@ -127,7 +127,7 @@ export default function StudentManager() {
                     data.registration_fee_paid
                   );
                   Notiflix.Notify.success("Inscription réussie !");
-                  loadData();
+                  loadData(currentPage);
                   setIsEnrollFormOpen(false);
                 } catch (error) {
                   console.error(error);

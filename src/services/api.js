@@ -17,6 +17,8 @@ api.interceptors.response.use(
 
             if (status === 401) {
                 Notiflix.Notify.failure("Session expirée, veuillez vous reconnecter.");
+                localStorage.removeItem("user");
+                localStorage.removeItem("token");
                 window.location.href = '/login';
             } else {
                 Notiflix.Notify.failure(message);
