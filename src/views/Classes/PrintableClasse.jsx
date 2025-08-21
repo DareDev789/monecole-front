@@ -31,7 +31,7 @@ export default function PrintableClasse({ classe, students }) {
                     {/* Logo à gauche */}
                     <Image
                         src="/logo1.jpg"
-                        style={{ width: 90, height: 90 }}
+                        style={{ width: 90 }}
                     />
                     {/* Infos à droite */}
                     <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
