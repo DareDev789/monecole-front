@@ -4,8 +4,10 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCalendar, faEnvelope, faPhone, faUser } from '@fortawesome/free-solid-svg-icons';
 import { enrollmentsApi } from '../../services/api';
 import Notiflix from 'notiflix';
+import { useStudent } from "../../Contextes/StudentContext";
 
 export default function StudentCardSimple({ student, enrolledID }) {
+  const { selectedStudent, setSelectedStudent } = useStudent();
 
   const onDelete = async (id) => {
     try {
@@ -45,7 +47,7 @@ export default function StudentCardSimple({ student, enrolledID }) {
             </div>
           )}
           <div>
-            <h3 className="text-lg font-medium">
+            <h3 className="text-lg font-medium cursor-pointer"  onClick={()=> setSelectedStudent(student)}>
               {student.first_name} {student.last_name}
             </h3>
             <p className="text-sm text-gray-500">
@@ -55,7 +57,7 @@ export default function StudentCardSimple({ student, enrolledID }) {
         </div>
       </div>
 
-      <div className="bg-gray-50 px-4 py-2 sm:px-6 flex justify-end space-x-2">
+      <div className="px-4 py-2 sm:px-6 flex justify-end space-x-2">
         <Button className='bg-red-600' size="sm" variant="secondary" onClick={() => onDelete(enrolledID)}>
           Retirer
         </Button>

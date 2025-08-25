@@ -7,7 +7,7 @@ import Button from '../../Components/ui/Button';
 import EnrollmentForm from './forms/EnrollmentForm';
 import Notiflix from "notiflix";
 import Pagination from '../../Components/ui/Pagination';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 
 export default function StudentManager() {
   // const { studentApi, schoolYearApi } = api();
@@ -19,7 +19,11 @@ export default function StudentManager() {
   const [loading, setLoading] = useState(true);
   const { page } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const currentPage = parseInt(page) || 1;
+
+  const queryParams = new URLSearchParams(location.search);
+  const [search, setSearch] = useState(queryParams.get("name") || "");
 
   const [pagination, setPagination] = useState({
     total: 0,
@@ -29,16 +33,17 @@ export default function StudentManager() {
 
 
   useEffect(() => {
-    loadData(currentPage);
+    loadData(currentPage, search);
   }, [currentPage]);
 
-  const loadData = async (page) => {
+  const loadData = async (page, searchTerm = "") => {
     setLoading(true);
     try {
       const [studentsRes, currentYearRes] = await Promise.all([
-        studentApi.getAll(page),
+        studentApi.getAll(page, { q: searchTerm }),
         schoolYearApi.getCurrent()
       ]);
+
       setStudents(studentsRes.data.data);
       setCurrentYear(currentYearRes.data);
       setPagination({
@@ -57,28 +62,53 @@ export default function StudentManager() {
   };
 
   const handlePageChange = (newPage) => {
-    navigate(`/gestion-eleves/page/${newPage}`);
+    const params = new URLSearchParams();
+    if (search) params.set("name", search);
+    navigate(`/gestion-eleves/page/${newPage}?${params.toString()}`);
+    loadData(newPage, search);
+  };
+
+  const handleSearch = async (e) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (search) params.set("name", search);
+    navigate(`/gestion-eleves/page/1?${params.toString()}`);
+    await loadData(1, search);
   };
 
 
   return (
     <>
-      {loading ? (
-        <div className="flex justify-center w-full py-8">
-          <div className="animate-spin rounded-full h-12 mx-auto w-12 border-t-2 border-b-2 border-indigo-500"></div>
+      <div className="space-y-6">
+        <div className="flex justify-between items-center">
+          <h2 className="text-2xl font-bold">Gestion des Étudiants</h2>
+          <Button onClick={() => {
+            setSelectedStudent(null);
+            setIsFormOpen(true);
+          }} className='bg-gray-500 hover:bg-gray-600'>
+            Ajouter un Étudiant
+          </Button>
         </div>
-      ) : (
-        <div className="space-y-6">
-          <div className="flex justify-between items-center">
-            <h2 className="text-2xl font-bold">Gestion des Étudiants</h2>
-            <Button onClick={() => {
-              setSelectedStudent(null);
-              setIsFormOpen(true);
-            }} className='bg-gray-500 hover:bg-gray-600'>
-              Ajouter un Étudiant
-            </Button>
-          </div>
 
+        {/* Champ de recherche */}
+        <form onSubmit={handleSearch} className="flex items-center space-x-2">
+          <input
+            type="text"
+            placeholder="Rechercher par nom..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="border rounded-lg px-3 py-2 w-64 shadow-sm focus:ring-2 focus:ring-indigo-400 outline-none"
+          />
+          <Button type="submit" className="bg-indigo-500 hover:bg-indigo-600">
+            Rechercher
+          </Button>
+        </form>
+
+        {loading ? (
+          <div className="flex justify-center w-full py-8">
+            <div className="animate-spin rounded-full h-12 mx-auto w-12 border-t-2 border-b-2 border-indigo-500"></div>
+          </div>
+        ) : (
           <StudentList
             students={students}
             loading={loading}
@@ -89,75 +119,74 @@ export default function StudentManager() {
             }}
             onEnroll={handleEnroll}
             loadData={loadData}
+          />)};
+
+        <Modal
+          isOpen={isFormOpen}
+          setIsOpen={() => setIsFormOpen(false)}
+          title={selectedStudent ? 'Modifier Étudiant' : 'Nouvel Étudiant'}
+        >
+          <StudentForm
+            initialData={selectedStudent || {}}
+            onSubmit={async (data) => {
+              if (selectedStudent) {
+                await studentApi.update(selectedStudent.id, data);
+              } else {
+                await studentApi.create(data);
+              }
+              loadData(currentPage);
+              setIsFormOpen(false);
+            }}
+            onCancel={() => setIsFormOpen(false)}
           />
+        </Modal>
 
-          <Modal
-            isOpen={isFormOpen}
-            setIsOpen={() => setIsFormOpen(false)}
-            title={selectedStudent ? 'Modifier Étudiant' : 'Nouvel Étudiant'}
-          >
-            <StudentForm
-              initialData={selectedStudent || {}}
-              onSubmit={async (data) => {
-                if (selectedStudent) {
-                  await studentApi.update(selectedStudent.id, data);
-                } else {
-                  await studentApi.create(data);
-                }
+        <Modal
+          isOpen={isEnrollFormOpen}
+          setIsOpen={() => setIsEnrollFormOpen(false)}
+          title={`Inscrire ${selectedStudent?.first_name} ${selectedStudent?.last_name}`}
+        >
+          <EnrollmentForm
+            student={selectedStudent}
+            currentYear={currentYear}
+            onSubmit={async (data) => {
+              try {
+                await schoolYearApi.enrollStudent(
+                  selectedStudent.id,
+                  data.class_id,
+                  data.registration_fee_paid
+                );
+                Notiflix.Notify.success("Inscription réussie !");
                 loadData(currentPage);
-                setIsFormOpen(false);
-              }}
-              onCancel={() => setIsFormOpen(false)}
-            />
-          </Modal>
-
-          <Modal
-            isOpen={isEnrollFormOpen}
-            setIsOpen={() => setIsEnrollFormOpen(false)}
-            title={`Inscrire ${selectedStudent?.first_name} ${selectedStudent?.last_name}`}
-          >
-            <EnrollmentForm
-              student={selectedStudent}
-              currentYear={currentYear}
-              onSubmit={async (data) => {
-                try {
-                  await schoolYearApi.enrollStudent(
-                    selectedStudent.id,
-                    data.class_id,
-                    data.registration_fee_paid
-                  );
-                  Notiflix.Notify.success("Inscription réussie !");
-                  loadData(currentPage);
-                  setIsEnrollFormOpen(false);
-                } catch (error) {
-                  console.error(error);
-                  if (error.response?.data?.message) {
-                    Notiflix.Notify.failure(error.response.data.message);
-                  } else if (error.response?.data?.errors) {
-                    // Affiche les erreurs de validation
-                    const messages = Object.values(error.response.data.errors)
-                      .flat()
-                      .join("\n");
-                    Notiflix.Notify.failure(messages);
-                  } else {
-                    Notiflix.Notify.failure("Une erreur s'est produite.");
-                  }
+                setIsEnrollFormOpen(false);
+              } catch (error) {
+                console.error(error);
+                if (error.response?.data?.message) {
+                  Notiflix.Notify.failure(error.response.data.message);
+                } else if (error.response?.data?.errors) {
+                  // Affiche les erreurs de validation
+                  const messages = Object.values(error.response.data.errors)
+                    .flat()
+                    .join("\n");
+                  Notiflix.Notify.failure(messages);
+                } else {
+                  Notiflix.Notify.failure("Une erreur s'est produite.");
                 }
-              }}
-              onCancel={() => setIsEnrollFormOpen(false)}
+              }
+            }}
+            onCancel={() => setIsEnrollFormOpen(false)}
+          />
+        </Modal>
+        {pagination.total > pagination.per_page && (
+          <div className="mt-6">
+            <Pagination
+              currentPage={pagination.current_page}
+              totalPages={Math.ceil(pagination.total / pagination.per_page)}
+              onPageChange={handlePageChange}
             />
-          </Modal>
-          {pagination.total > pagination.per_page && (
-            <div className="mt-6">
-              <Pagination
-                currentPage={pagination.current_page}
-                totalPages={Math.ceil(pagination.total / pagination.per_page)}
-                onPageChange={handlePageChange}
-              />
-            </div>
-          )}
-        </div>
-      )}
+          </div>
+        )}
+      </div>
     </>
   );
 }

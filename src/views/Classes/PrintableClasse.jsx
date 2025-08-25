@@ -3,21 +3,82 @@ import { Page, Text, View, Document, StyleSheet, Image } from "@react-pdf/render
 const styles = StyleSheet.create({
     page: {
         padding: 20,
-        fontSize: 10
+        fontSize: 10,
+        fontFamily: "Helvetica"
     },
-    header: {
-        fontSize: 12,
-        fontWeight: "bold",
-        marginBottom: 10
+    headerContainer: {
+        flexDirection: "row",
+        justifyContent: "space-between",
+        alignItems: "center",
+        marginBottom: 20
     },
-    student: {
-        marginBottom: 4,
+    schoolInfo: {
+        flexDirection: "column",
+        alignItems: "flex-end"
+    },
+    schoolName: {
+        fontSize: 18,
+        fontWeight: "bold"
+    },
+    title: {
+        fontSize: 14,
+        marginBottom: 10,
+        textAlign: "center"
+    },
+    table: {
+        display: "table",
+        width: "auto",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#000",
+        borderRightWidth: 0,
+        borderBottomWidth: 0
+    },
+    tableRow: {
+        flexDirection: "row"
+    },
+    tableColHeader: {
+        width: "10%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#000",
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+        backgroundColor: "#f0f0f0",
         padding: 4,
-        borderBottom: "1px solid #ccc"
+        fontWeight: "bold",
+        textAlign: "center"
+    },
+    tableColName: {
+        width: "60%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#000",
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+        padding: 4
+    },
+    tableColDate: {
+        width: "30%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#000",
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+        padding: 4,
+        textAlign: "center"
+    },
+    tableCellHeader: {
+        fontSize: 11,
+        fontWeight: "bold"
+    },
+    tableCell: {
+        fontSize: 10
     }
 });
 
 export default function PrintableClasse({ classe, students }) {
+
     const sortedStudents = [...students].sort((a, b) => {
         const nameA = `${a.student?.first_name || ""} ${a.student?.last_name || ""}`.toLowerCase();
         const nameB = `${b.student?.first_name || ""} ${b.student?.last_name || ""}`.toLowerCase();
@@ -27,30 +88,55 @@ export default function PrintableClasse({ classe, students }) {
     return (
         <Document>
             <Page size="A4" orientation="portrait" style={styles.page}>
-                <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
-                    {/* Logo à gauche */}
-                    <Image
-                        src="/logo1.jpg"
-                        style={{ width: 90 }}
-                    />
-                    {/* Infos à droite */}
-                    <View style={{ flexDirection: "column", alignItems: "flex-end" }}>
-                        <Text style={{ fontSize: 18, fontWeight: "bold" }}>Ecole Privée Les Petits Lutins</Text>
+                {/* En-tête avec logo et infos école */}
+                <View style={styles.headerContainer}>
+                    <Image src="/logo1.jpg" style={{ width: 90 }} />
+                    <View style={styles.schoolInfo}>
+                        <Text style={styles.schoolName}>Ecole Privée Les Petits Lutins</Text>
                         <Text>Diego Suarez, Madagascar</Text>
                         <Text>Année scolaire : 2025 - 2026</Text>
                         <Text>Classe : {classe?.name}</Text>
                     </View>
                 </View>
 
-                <View style={{ marginTop: 15 }}>
-                    <Text style={{ fontSize: 14, marginBottom: 10 }}>
-                        Liste des élèves ({students.length})
-                    </Text>
+                {/* Titre */}
+                <Text style={styles.title}>
+                    Liste des élèves ({students.length})
+                </Text>
+
+                {/* Tableau */}
+                <View style={styles.table}>
+                    {/* Ligne d'en-tête */}
+                    <View style={styles.tableRow}>
+                        <View style={styles.tableColHeader}>
+                            <Text style={styles.tableCellHeader}>#</Text>
+                        </View>
+                        <View style={styles.tableColName}>
+                            <Text style={styles.tableCellHeader}>Nom et Prénom</Text>
+                        </View>
+                        <View style={styles.tableColDate}>
+                            <Text style={styles.tableCellHeader}>Date de naissance</Text>
+                        </View>
+                    </View>
+
+                    {/* Lignes élèves */}
                     {sortedStudents.map((s, i) => (
-                        <View key={s.id} style={styles.student}>
-                            <Text>
-                                {i + 1}. {s.student?.first_name} {s.student?.last_name}
-                            </Text>
+                        <View style={styles.tableRow} key={s.id}>
+                            <View style={styles.tableColHeader}>
+                                <Text style={styles.tableCell}>{i + 1}</Text>
+                            </View>
+                            <View style={styles.tableColName}>
+                                <Text style={styles.tableCell}>
+                                    {s.student?.first_name} {s.student?.last_name}
+                                </Text>
+                            </View>
+                            <View style={styles.tableColDate}>
+                                <Text style={styles.tableCell}>
+                                    {s.student?.birth_date
+                                        ? new Date(s.student.birth_date).toLocaleDateString()
+                                        : ""}
+                                </Text>
+                            </View>
                         </View>
                     ))}
                 </View>
