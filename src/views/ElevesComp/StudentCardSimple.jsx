@@ -6,8 +6,8 @@ import { enrollmentsApi } from '../../services/api';
 import Notiflix from 'notiflix';
 import { useStudent } from "../../Contextes/StudentContext";
 
-export default function StudentCardSimple({ student, enrolledID }) {
-  const { selectedStudent, setSelectedStudent } = useStudent();
+export default function StudentCardSimple({ student, enrolledID, className }) {
+  const { selectedStudent, setSelectedStudent, selectedClassName, setSelectedClassName } = useStudent();
 
   const onDelete = async (id) => {
     try {
@@ -47,7 +47,7 @@ export default function StudentCardSimple({ student, enrolledID }) {
             </div>
           )}
           <div>
-            <h3 className="text-lg font-medium cursor-pointer"  onClick={()=> setSelectedStudent(student)}>
+            <h3 className="text-lg font-medium cursor-pointer"  onClick={()=> {setSelectedStudent(student); setSelectedClassName(className);}}>
               {student.first_name} {student.last_name}
             </h3>
             <p className="text-sm text-gray-500">

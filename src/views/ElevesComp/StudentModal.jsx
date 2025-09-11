@@ -16,15 +16,15 @@ import {
 import { useEffect, useState } from "react";
 import { studentApi } from "../../services/api";
 import PrintCertificat from './PrintCertificat';
+import PrintRadiation from './PrintRadiation';
 import { PDFViewer, PDFDownloadLink } from "@react-pdf/renderer";
 import Button from "../../Components/ui/Button";
+import { pdf } from "@react-pdf/renderer";
 
 export default function StudentModal() {
-    const { selectedStudent, setSelectedStudent } = useStudent();
-    console.log(selectedStudent);
+    const { selectedStudent, setSelectedStudent, selectedClassName, setSelectedClassName } = useStudent();
     const [metas, setMetas] = useState([]);
     const [isDirty, setIsDirty] = useState(false);
-    const [loading, setLoading] = useState(true);
 
     const [showModalCert, setShowModalCert] = useState(false);
     const [showModalAtt, setShowModalAtt] = useState(false);
@@ -48,7 +48,6 @@ export default function StudentModal() {
         setIsDirty(true);
     };
 
-    // ✏️ Modifier une meta
     const updateMeta = (index, field, value) => {
         const updated = [...metas];
         updated[index][field] = value;
@@ -56,7 +55,6 @@ export default function StudentModal() {
         setIsDirty(true);
     };
 
-    // 🗑️ Supprimer une meta
     const removeMeta = (index) => {
         const updated = [...metas];
         updated.splice(index, 1);
@@ -71,21 +69,40 @@ export default function StudentModal() {
         };
 
         setSelectedStudent(updatedStudent);
-        console.log(updatedStudent);
         await studentApi.update(selectedStudent.id, updatedStudent);
-        console.log("Metas sauvegardées :", metas);
         alert("Informations mises à jour !");
     };
 
-    const handlePrint = () => {
-        window.print();
+
+    const handlePrintCertificat = async () => {
+        const blob = await pdf(
+            <PrintCertificat student={selectedStudent} className={selectedClassName} />
+        ).toBlob();
+
+        const url = URL.createObjectURL(blob);
+        const win = window.open(url);
+        win.onload = () => {
+            win.print();
+        };
+    };
+
+    const handlePrintRadiation = async () => {
+        const blob = await pdf(
+            <PrintRadiation student={selectedStudent} className={selectedClassName} />
+        ).toBlob();
+
+        const url = URL.createObjectURL(blob);
+        const win = window.open(url);
+        win.onload = () => {
+            win.print();
+        };
     };
 
     return (
         <>
             <Modal
                 isOpen={!!selectedStudent}
-                setIsOpen={() => {setSelectedStudent(null); setShowModalCert(false);}}
+                setIsOpen={() => { setSelectedStudent(null); setShowModalCert(false); setShowModalAtt(false); setSelectedClassName(null); }}
                 title="Dossier étudiant"
                 width="max-w-3xl"
             >
@@ -141,7 +158,7 @@ export default function StudentModal() {
                                 </div>
                             </div>
 
-                            {/* Section META (infos personnalisées) */}
+                            {/* Section META */}
                             <div className="mt-6">
                                 <h4 className="font-semibold text-gray-800 mb-2">
                                     Informations complémentaires
@@ -195,9 +212,10 @@ export default function StudentModal() {
                                 )}
                             </div>
 
+                            {/* Boutons impression */}
                             <div className="mt-6 flex justify-end gap-3">
                                 <button
-                                    onClick={() => setShowModalCert(true)}
+                                    onClick={handlePrintCertificat}
                                     className="px-4 py-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 flex items-center gap-2"
                                 >
                                     <FontAwesomeIcon icon={faPrint} className="h-4 w-4" />
@@ -205,18 +223,20 @@ export default function StudentModal() {
                                 </button>
 
                                 <button
-                                    onClick={handlePrint}
+                                    onClick={handlePrintRadiation}
                                     className="px-4 py-2 text-sm bg-gray-100 rounded-lg hover:bg-gray-200 flex items-center gap-2"
                                 >
                                     <FontAwesomeIcon icon={faPrint} className="h-4 w-4" />
                                     Imprimer attestation de radiation
                                 </button>
+
                             </div>
                         </div>
                     </motion.div>
                 )}
             </Modal>
 
+            {/* Modal certificat */}
             {showModalCert && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
                     <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-3/4 p-6 relative">
@@ -224,17 +244,50 @@ export default function StudentModal() {
 
                         <div className="h-[70vh] border rounded">
                             <PDFViewer width="100%" height="100%">
-                                <PrintCertificat student={selectedStudent} />
+                                <PrintCertificat student={selectedStudent} className={selectedClassName} />
                             </PDFViewer>
                         </div>
 
                         <div className="mt-6 flex justify-end gap-3">
-                            <Button className="bg-gray-500" onClick={() => {setSelectedStudent(selectedStudent); setShowModalCert(false);}}>
+                            <Button className="bg-gray-500" onClick={() => setShowModalCert(false)}>
                                 Fermer
                             </Button>
                             <PDFDownloadLink
-                                document={<PrintCertificat student={selectedStudent} />}
+                                document={<PrintCertificat student={selectedStudent} className={selectedClassName} />}
                                 fileName={`Certificat_scolarite_${selectedStudent.first_name}_${selectedStudent.last_name}.pdf`}
+                            >
+                                {({ loading }) =>
+                                    loading ? (
+                                        <Button className="bg-blue-300">Préparation...</Button>
+                                    ) : (
+                                        <Button className="bg-blue-600">Télécharger PDF</Button>
+                                    )
+                                }
+                            </PDFDownloadLink>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Modal radiation */}
+            {showModalAtt && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[70]">
+                    <div className="bg-white rounded-lg shadow-lg w-11/12 md:w-3/4 lg:w-3/4 p-6 relative">
+                        <h2 className="text-xl font-bold mb-4">Aperçu PDF</h2>
+
+                        <div className="h-[70vh] border rounded">
+                            <PDFViewer width="100%" height="100%">
+                                <PrintRadiation student={selectedStudent} className={selectedClassName} />
+                            </PDFViewer>
+                        </div>
+
+                        <div className="mt-6 flex justify-end gap-3">
+                            <Button className="bg-gray-500" onClick={() => setShowModalAtt(false)}>
+                                Fermer
+                            </Button>
+                            <PDFDownloadLink
+                                document={<PrintRadiation student={selectedStudent} className={selectedClassName} />}
+                                fileName={`Attestation_radiation_${selectedStudent.first_name}_${selectedStudent.last_name}.pdf`}
                             >
                                 {({ loading }) =>
                                     loading ? (

@@ -5,10 +5,10 @@ import { faCalendar, faEnvelope, faPhone, faUser } from '@fortawesome/free-solid
 import { studentApi } from '../../services/api';
 import Notiflix from 'notiflix';
 import { motion } from 'framer-motion';
-import { useStudent } from "../../Contextes/StudentContext";
+import { useStudent } from "../../Contextes/StudentContext"; 
 
 export default function StudentCard({ student, currentYear, onEdit, onEnroll, loadData }) {
-  const { selectedStudent, setSelectedStudent } = useStudent();
+  const { selectedStudent, setSelectedStudent, selectedClassName, setSelectedClassName } = useStudent({});
   const enrollment = currentYear?.enrollments?.find(e => e.student_id === student.id);
   const isEnrolled = !!enrollment;
   const classeName = enrollment?.class?.name;
@@ -59,7 +59,7 @@ export default function StudentCard({ student, currentYear, onEdit, onEnroll, lo
             </div>
           )}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 cursor-pointer" onClick={()=> setSelectedStudent(student)}>
+            <h3 className="text-lg font-semibold text-gray-900 cursor-pointer" onClick={()=> {setSelectedStudent(student); setSelectedClassName(classeName);}}>
               {student.first_name} {student.last_name}
             </h3>
             <p className="text-sm text-gray-500">

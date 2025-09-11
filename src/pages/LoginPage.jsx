@@ -49,6 +49,7 @@ export function LoginPage() {
                     setShowAdmin(false);
                     setShowUser(true);
                 }
+                navigate('/');
             }
         } catch (err) {
             console.log(err);

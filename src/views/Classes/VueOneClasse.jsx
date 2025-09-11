@@ -42,8 +42,6 @@ export default function VueOneClasse() {
         loadClasse();
     }, [id]);
 
-
-
     return (
         <div className="p-4 min-h-screen bg-white">
             {!loading ? (
@@ -101,6 +99,7 @@ export default function VueOneClasse() {
                                         key={student.id}
                                         student={student?.student}
                                         enrolledID={student.id}
+                                        className={classe.name}
                                     />
                                 ))}
                             </div>

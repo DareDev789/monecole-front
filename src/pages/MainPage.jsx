@@ -73,7 +73,7 @@ function MainPage() {
 
     useEffect(() => {
         loadData();
-    }, []);
+    }, [url, token]);
 
     const loadData = async () => {
         const [currentYearRes] = await Promise.all([

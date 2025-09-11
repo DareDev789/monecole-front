@@ -41,7 +41,8 @@ export default function ClassesList({ classes, loading, onEdit, loadClasses }) {
                             <div key={classe.id}>
                                 <ClassCard classe={classe}
                                     onEdit={() => onEdit(classe)}
-                                    handleDelete={() => handleDelete(classe.id)} />
+                                    handleDelete={() => handleDelete(classe.id)}
+                                     />
                             </div>
                         ))}
                     </div>

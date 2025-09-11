@@ -38,7 +38,7 @@ export default function StudentForm({ initialData, onSubmit, onCancel }) {
         />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Controller
           name="birth_date"
           control={control}
@@ -48,6 +48,17 @@ export default function StudentForm({ initialData, onSubmit, onCancel }) {
             <Input label="Date de Naissance" type="date" required {...field} />
           )}
         />
+        <Controller
+          name="birth_place"
+          control={control}
+          defaultValue=""
+          rules={{ required: true }}
+          render={({ field }) => (
+            <Input label="Lieu de Naissance" type="text" required {...field} />
+          )}
+        />
+      </div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Controller
           name="gender"
           control={control}
@@ -73,7 +84,6 @@ export default function StudentForm({ initialData, onSubmit, onCancel }) {
           )}
         />
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <Controller
           name="parent_name"

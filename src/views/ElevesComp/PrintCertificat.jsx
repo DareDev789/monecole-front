@@ -45,8 +45,9 @@ const styles = StyleSheet.create({
     }
 });
 
-export default function PrintableClasse({ student }) {
+export default function PrintableClasse({ student, className }) {
     const today = new Date().toLocaleDateString();
+    console.log(className);
 
     return (
         <Document>
@@ -77,7 +78,7 @@ export default function PrintableClasse({ student }) {
                     </Text>, né(e) le{" "}
                     {student?.birth_date ? new Date(student.birth_date).toLocaleDateString() : ""}{" "}
                     à {student?.birth_place || "________"}, inscrit(e) dans la classe de{" "}
-                    <Text style={styles.bold}>{student?.classe?.name}</Text>, 
+                    <Text style={styles.bold}>{className || "________"}</Text>,
                     fils/fille de <Text style={styles.bold}>{student?.parent_name}</Text>, 
                     a fréquenté notre établissement depuis le{" "}
                     {student?.enrollment_date
