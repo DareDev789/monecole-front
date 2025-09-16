@@ -8,6 +8,9 @@ export default function Dashboard() {
 
   const [lastStudents, setLastStudents] = useState([]);
 
+  const tokenString = localStorage.getItem("token");
+  let token = JSON.parse(tokenString);
+
   const loadData = async () => {
     setLoading(true);
     try {
@@ -17,21 +20,23 @@ export default function Dashboard() {
         personnelsApi.getAll(),
         SubjectsApi.getAll(),
       ]);
-      await setStats([
+      setStats([
         { label: "Élèves inscrits", value: enrolledStudent?.data?.length || 0, icon: "🎓" },
         { label: "Staffs", value: personnal?.data?.pagination?.total || 0, icon: "👩‍🏫" },
         { label: "Classes actives", value: classes?.data?.total || 0, icon: "🏫" },
         { label: "Matières", value: matieres?.data?.total || 0, icon: "📚" }
       ]);
-      await setLastStudents(enrolledStudent?.data || []);
+      setLastStudents(enrolledStudent?.data || []);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    loadData();
-  }, []);
+    if (!stats) {
+      loadData();
+    }
+  }, [token, stats]);
 
   if (loading) {
     return (
@@ -93,7 +98,7 @@ export default function Dashboard() {
               </motion.div>
             </div>
           </div>
-         </>
+        </>
       )}
     </>
   );

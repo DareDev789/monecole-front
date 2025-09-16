@@ -38,7 +38,7 @@ const styles = StyleSheet.create({
         flexDirection: "row"
     },
     tableColHeader: {
-        width: "10%",
+        width: "5%",
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#000",
@@ -50,7 +50,25 @@ const styles = StyleSheet.create({
         textAlign: "center"
     },
     tableColName: {
-        width: "60%",
+        width: "50%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#000",
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+        padding: 4
+    },
+    tableColPhone: {
+        width: "20%",
+        borderStyle: "solid",
+        borderWidth: 1,
+        borderColor: "#000",
+        borderLeftWidth: 0,
+        borderTopWidth: 0,
+        padding: 4
+    },
+    tableColAdresse: {
+        width: "30%",
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#000",
@@ -59,7 +77,7 @@ const styles = StyleSheet.create({
         padding: 4
     },
     tableColDate: {
-        width: "30%",
+        width: "20%",
         borderStyle: "solid",
         borderWidth: 1,
         borderColor: "#000",
@@ -114,6 +132,12 @@ export default function PrintableClasse({ classe, students }) {
                         <View style={styles.tableColName}>
                             <Text style={styles.tableCellHeader}>Nom et Prénom</Text>
                         </View>
+                        <View style={styles.tableColPhone}>
+                            <Text style={styles.tableCellHeader}>Téléphone</Text>
+                        </View>
+                        <View style={styles.tableColAdresse}>
+                            <Text style={styles.tableCellHeader}>Adresse</Text>
+                        </View>
                         <View style={styles.tableColDate}>
                             <Text style={styles.tableCellHeader}>Date de naissance</Text>
                         </View>
@@ -129,6 +153,12 @@ export default function PrintableClasse({ classe, students }) {
                                 <Text style={styles.tableCell}>
                                     {s.student?.first_name} {s.student?.last_name}
                                 </Text>
+                            </View>
+                            <View style={styles.tableColPhone}>
+                                <Text style={styles.tableCell}>{s.student?.parent_phone}</Text>
+                            </View>
+                            <View style={styles.tableColAdresse}>
+                                <Text style={styles.tableCell}>{s.student?.address}</Text>
                             </View>
                             <View style={styles.tableColDate}>
                                 <Text style={styles.tableCell}>
