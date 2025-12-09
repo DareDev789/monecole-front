@@ -73,6 +73,7 @@ export const studentApi = {
     update: (id, data) => api.put(`/students/${id}`, data),
     delete: (id) => api.delete(`/students/${id}`),
     currentStudentsClass: (classId) => api.get(`/current-year/students/class/${classId}`),
+    currentStudentsClassWithTerms: (data) => api.post(`/current-year/students/class/with-terms`, data),
     search: (q) => api.get(`/students/search?q=${q}`),
 };
 
@@ -94,6 +95,7 @@ export const SubjectsApi = {
     getOutOfClass: (classeId) =>
         api.get('/subjects/out-of-class', { params: { classeId } }),
     GetSubjectClass: (classId) => api.get(`/subjects/class/${classId}`),
+    GetSujectNotesByClassAndTerm : (data) => api.post(`/subjects/class/note-by-class`, data),
 };
 
 export const personnelsApi = {
@@ -136,6 +138,10 @@ export const PaiementApi = {
     save: (data) => api.post(`/payments`, data),
     update: (id, data) => api.put(`/payments/${id}`, data),
 };
+
+export const GradeApi = {
+    bulk : (data) =>api.post("/grades/bulk", data),
+}
 
 
 export default api;

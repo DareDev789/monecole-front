@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Notiflix from "notiflix";
-import { classApi, studentApi, termsApi, SubjectsApi } from "../../services/api";
+import { classApi, studentApi, termsApi, SubjectsApi, GradeApi } from "../../services/api";
 import Modal from "../../Components/ui/Modal";
 import ChargeStudentComp from "./ChargeStudentComp";
 import StudentTable from "./StudentTable";
 import LoadingIndicator from "../../Components/ui/LoadingIndicator";
 import GradeForm from "./GradeForm";
+import NProgress from "nprogress";
 
 export default function GradeManager() {
     const [classes, setClasses] = useState([]);
@@ -19,32 +20,70 @@ export default function GradeManager() {
     const [modalOpen, setModalOpen] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Charger classes et terms
     useEffect(() => {
-        classApi.getAll().then(res => setClasses(res.data.data));
-        termsApi.current().then(res => setTerms(res.data));
+        const fetchData = async () => {
+            try {
+                const [classesRes, termsRes] = await Promise.all([
+                    classApi.getAll(),
+                    termsApi.current(),
+                ]);
+
+                setClasses(Array.isArray(classesRes.data?.data) ? classesRes.data.data : []);
+                setTerms(Array.isArray(termsRes.data) ? termsRes.data : []);
+
+            } catch (error) {
+                console.error("Erreur lors du chargement des classes ou termes :", error);
+
+                setClasses([]);
+                setTerms([]);
+            }
+        };
+
+        fetchData();
     }, []);
+
 
     const loadStudents = async () => {
         if (!selectedClass) return;
         setLoading(true);
         setStudents([]);
-        await studentApi.currentStudentsClass(selectedClass).then(res => setStudents(res.data));
+        const data = {
+            selectedClass,
+            selectedTerm
+        }
+        await studentApi.currentStudentsClassWithTerms(data).then(res => setStudents(res.data));
         setLoading(false);
     };
 
-    const openModal = (student) => {
-        setSelectedStudent(student);
-        SubjectsApi.GetSubjectClass(selectedClass).then(res => {
-            console.log(res.data);
+    const openModal = async (student) => {
+        try {
+            setSelectedStudent(student);
+            NProgress.start();
+
+            const data = {
+                student_id: student.id,
+                selectedClass: selectedClass,
+                selectedTerm: selectedTerm,
+            };
+
+            const res = await SubjectsApi.GetSujectNotesByClassAndTerm(data);
+
             setSubjects(res.data);
-            // Init notes
+
             const initialGrades = {};
-            res.data.forEach(s => { initialGrades[s.id] = "" });
+            res.data.forEach(subject => {
+                initialGrades[subject.id] = subject.grade ?? "";
+            });
             setGrades(initialGrades);
+
             setModalOpen(true);
-        });
+        } catch (error) {
+            console.error("Erreur lors de l'ouverture du modal:", error);
+        } finally {
+            NProgress.done();
+        }
     };
+
 
     const handleGradeChange = (subjectId, value) => {
         setGrades(prev => ({ ...prev, [subjectId]: value }));
@@ -52,13 +91,18 @@ export default function GradeManager() {
 
     const calculateAverage = () => {
         let total = 0, coefSum = 0;
+
         subjects.forEach(s => {
-            const note = parseFloat(grades[s.id] || 0);
-            total += note * s.coefficient;
-            coefSum += s.coefficient;
+            const note = parseFloat(grades[s.id]);
+            if (!isNaN(note) && note > 0) {
+                total += note * s.coefficient;
+                coefSum += s.coefficient;
+            }
         });
+
         return coefSum ? (total / coefSum).toFixed(2) : "-";
     };
+
 
     const saveGrades = () => {
         const payload = {
@@ -72,12 +116,16 @@ export default function GradeManager() {
             }))
         };
 
-        api.post("/grades/bulk", payload)
+        GradeApi.bulk(payload)
             .then(() => {
                 Notiflix.Notify.success("Notes enregistrées");
+                loadStudents();
                 setModalOpen(false);
             })
-            .catch(() => Notiflix.Notify.failure("Erreur lors de l'enregistrement"));
+            .catch((e) => {
+                console.log(e);
+                Notiflix.Notify.failure("Erreur lors de l'enregistrement")
+            });
     };
 
     return (

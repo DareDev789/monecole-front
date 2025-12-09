@@ -3,6 +3,12 @@ import { PencilSquareIcon } from "@heroicons/react/24/outline";
 import EmptyState from "../../Components/ui/EmptyState";
 
 export default function StudentTable({ students, openModal }) {
+    const sortedStudents = [...students].sort((a, b) => {
+        const getName = (s) =>
+            `${s.student?.first_name || s.first_name || ""} ${s.student?.last_name || s.last_name || ""}`.toLowerCase();
+        return getName(a).localeCompare(getName(b));
+    });
+
     return (
         <motion.div
             className="overflow-x-auto shadow-md rounded-lg"
@@ -18,7 +24,7 @@ export default function StudentTable({ students, openModal }) {
                     </tr>
                 </thead>
                 <tbody>
-                    {students.length === 0 ? (
+                    {sortedStudents.length === 0 ? (
                         <tr>
                             <td colSpan="2" className="text-center py-4 text-gray-500 italic">
                                 <EmptyState
@@ -28,24 +34,27 @@ export default function StudentTable({ students, openModal }) {
                             </td>
                         </tr>
                     ) : (
-                        students.map((s, index) => (
+                        sortedStudents.map((s, index) => (
                             <motion.tr
                                 key={s.id}
-                                className={`hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"}`}
+                                className={`hover:bg-blue-50 transition-colors ${
+                                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                                }`}
                                 whileHover={{ scale: 1.01 }}
                             >
                                 <td className="px-6 py-3 border-b text-sm text-gray-800">
-                                    {s.first_name} {s.last_name}
+                                    {s.student?.first_name || s.first_name}{" "}
+                                    {s.student?.last_name || s.last_name}
                                 </td>
                                 <td className="px-6 py-3 border-b text-center">
                                     <motion.button
                                         onClick={() => openModal(s)}
-                                        className="inline-flex items-center gap-2 px-4 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg shadow hover:bg-gray-700 active:scale-95 transition-all"
+                                        className={`${s?.average ? "bg-green-500" : "bg-gray-600"} inline-flex items-center gap-2 px-4 py-2 text-white text-sm font-medium rounded-lg shadow hover:bg-gray-700 active:scale-95 transition-all`}
                                         whileHover={{ scale: 1.05 }}
                                         whileTap={{ scale: 0.95 }}
                                     >
                                         <PencilSquareIcon className="w-4 h-4" />
-                                        Saisir notes
+                                        Saisir notes {s?.average && (<><i>| Moy : {s?.average}</i></>)}
                                     </motion.button>
                                 </td>
                             </motion.tr>
