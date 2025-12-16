@@ -146,6 +146,8 @@ export default function GradeManager() {
             ) : (
                 <StudentTable
                     students={students}
+                    selectedClass={selectedClass}
+                    selectedTerm={selectedTerm}
                     openModal={openModal}
                 />
             )}

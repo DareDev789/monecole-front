@@ -141,6 +141,7 @@ export const PaiementApi = {
 
 export const GradeApi = {
     bulk : (data) =>api.post("/grades/bulk", data),
+    getClassBulletins : (data) => api.post("/grades/get_class_bulletins", data)
 }
 
 

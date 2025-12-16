@@ -7,7 +7,7 @@ export default function ChargeStudentComp({
   selectedTerm,
   setSelectedTerm,
   terms = [],
-  loadStudents
+  loadStudents 
 }) {
   return (
     <motion.div
