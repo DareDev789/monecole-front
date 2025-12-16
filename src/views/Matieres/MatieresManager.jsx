@@ -51,7 +51,7 @@ export default function MatieresManager() {
 
     useEffect(() => {
         fetchSubjects();
-    }, []);
+    }, [currentPage]);
 
     const handleDelete = async (id) => {
         try {
@@ -109,7 +109,7 @@ export default function MatieresManager() {
                         {pagination.total > pagination.per_page && (
                             <div className="mt-6">
                                 <Pagination
-                                    currentPage={pagination.current_page}
+                                    currentPage={currentPage}
                                     totalPages={Math.ceil(pagination.total / pagination.per_page)}
                                     onPageChange={handlePageChange}
                                 />

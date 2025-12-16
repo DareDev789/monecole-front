@@ -47,7 +47,6 @@ const styles = StyleSheet.create({
 
 export default function PrintableClasse({ student, className }) {
     const today = new Date().toLocaleDateString();
-    console.log(className);
 
     return (
         <Document>

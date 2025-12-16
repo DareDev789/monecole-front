@@ -104,7 +104,7 @@ export default function GradeManager() {
     };
 
 
-    const saveGrades = () => {
+    const saveGrades = async() => {
         const payload = {
             grades: subjects.map(s => ({
                 student_id: selectedStudent.id,
