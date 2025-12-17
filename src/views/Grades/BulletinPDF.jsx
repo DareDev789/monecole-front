@@ -14,7 +14,7 @@ import { Fragment } from "react";
  * - className: string
  * - termName: string
  */
-export default function ClassBulletinsPDF({ students, className, termName }) {
+export default function ClassBulletinsPDF({ students = [], className, termName }) {
 
     /* 🔢 Calcul des rangs */
     const rankedStudents = [...students]

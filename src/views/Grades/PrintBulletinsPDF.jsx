@@ -10,14 +10,12 @@ const styles = StyleSheet.create({
     /* ===== HEADER ===== */
     headerContainer: {
         flexDirection: "row",
+        justifyContent: "space-between",
         alignItems: "center",
-        marginBottom: 20,
-        borderBottomWidth: 1,
-        paddingBottom: 10,
     },
     logo: {
-        width: 70,
-        height: 70,
+        width: 80,
+        height: 80,
     },
     schoolInfo: {
         marginLeft: 15,
@@ -126,7 +124,7 @@ const styles = StyleSheet.create({
 
 });
 
-export default function PrintBulletinsPDF({ students, className, termName }) {
+export default function PrintBulletinsPDF({ students, className, termName, annee_scolaire, birth }) {
 
     const rankedStudents = [...students]
         .sort((a, b) => b.average - a.average)
@@ -139,13 +137,20 @@ export default function PrintBulletinsPDF({ students, className, termName }) {
 
                     {/* ===== HEADER (RÉPÉTÉ À CHAQUE PAGE) ===== */}
                     <View style={styles.headerContainer}>
-                        <Image src="/petits_lutin_logo-01" style={styles.logo} />
-                        <View style={styles.schoolInfo}>
-                            <Text style={styles.schoolName}>
-                                Ecole Privée Les Petits Lutins
-                            </Text>
-                            <Text style={styles.schoolAddress}>
-                                Diego Suarez, Madagascar
+                        <View style={styles.headerContainer}>
+                            <Image src="/petits_lutin_logo-01.png" style={styles.logo} />
+                            <View style={styles.schoolInfo}>
+                                <Text style={styles.schoolName}>
+                                    Ecole Privée Les Petits Lutins
+                                </Text>
+                                <Text style={styles.schoolAddress}>
+                                    Diego Suarez, Madagascar
+                                </Text>
+                            </View>
+                        </View>
+                        <View>
+                            <Text>
+                                "{annee_scolaire}"
                             </Text>
                         </View>
                     </View>
@@ -154,32 +159,35 @@ export default function PrintBulletinsPDF({ students, className, termName }) {
                     <Text style={styles.title}>Bulletin de notes</Text>
 
                     {/* ===== INFOS ÉLÈVE ===== */}
-                        <Text>
-                            Élève : {student.first_name} {student.last_name}
-                        </Text>
-                        <Text>
-                            Classe : {className}
-                        </Text>
-                        <Text>
-                            Trimestre : {termName} (2025-2026)
-                        </Text>
+                    <Text>
+                        Élève : {student.first_name} {student.last_name}
+                    </Text>
+                    <Text>
+                        Classe : {className}
+                    </Text>
+                    <Text>
+                        Date de naissance : {student.birth}
+                    </Text>
+                    <Text>
+                        Trimestre : {termName}
+                    </Text>
 
                     {/* ===== TABLE NOTES ===== */}
                     <View style={styles.table}>
                         <View style={styles.tableRow}>
                             <Text style={styles.th}>Matière</Text>
-                            <Text style={styles.thSmall}>Note</Text>
                             <Text style={styles.thSmall}>Coef</Text>
+                            <Text style={styles.thSmall}>{termName}</Text>
                         </View>
 
                         {student.subjects.map((sub) => (
                             <View key={sub.id} style={styles.tableRow}>
                                 <Text style={styles.td}>{sub.name}</Text>
                                 <Text style={styles.tdSmall}>
-                                    {sub.grade ?? "-"}
+                                    {sub.coefficient}
                                 </Text>
                                 <Text style={styles.tdSmall}>
-                                    {sub.coefficient}
+                                    {sub.grade ?? "-"}
                                 </Text>
                             </View>
                         ))}
@@ -202,7 +210,7 @@ export default function PrintBulletinsPDF({ students, className, termName }) {
                             </Text>
                         </View>
                     </View>
-                    
+
 
                     {/* ===== FOOTER ===== */}
                     <View style={styles.signatureTable}>
