@@ -139,7 +139,7 @@ export default function PrintBulletinsPDF({ students, className, termName }) {
 
                     {/* ===== HEADER (RÉPÉTÉ À CHAQUE PAGE) ===== */}
                     <View style={styles.headerContainer}>
-                        <Image src="/petits_lutin_logo-01" style={styles.logo} />
+                        <Image src="/petits_lutin_logo-01.jpg" style={styles.logo} />
                         <View style={styles.schoolInfo}>
                             <Text style={styles.schoolName}>
                                 Ecole Privée Les Petits Lutins
