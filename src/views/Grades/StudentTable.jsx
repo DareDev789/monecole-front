@@ -23,6 +23,7 @@ export default function StudentTable({ students, openModal, selectedClass, selec
     /* 🔥 STATES LOCAUX */
     const [modalOpen, setModalOpen] = useState(false);
     const [bulletinData, setBulletinData] = useState(null);
+    const [annee_scolaire, setAnnee_scolaire] = useState('');
     const [loadingBulletins, setLoadingBulletins] = useState(false);
 
     /* 🔥 FETCH BACKEND */
@@ -34,7 +35,6 @@ export default function StudentTable({ students, openModal, selectedClass, selec
                 term_id: selectedTerm,
             };
             const res = await GradeApi.getClassBulletins(data);
-            console.log(res);
             setBulletinData(res?.data || []);
             setModalOpen(true);
         } catch (e) {
@@ -50,7 +50,10 @@ export default function StudentTable({ students, openModal, selectedClass, selec
         const blob = await pdf(
             <PrintBulletinsPDF students={bulletinData.students}
                 className={bulletinData.class_name}
-                termName={bulletinData.term_name} />
+                termName={bulletinData.term_name}
+                annee_scolaire={bulletinData?.annee_scolaire || ''}
+                birth={bulletinData?.birth || ''}
+                 />
         ).toBlob();
         nProgress.done();
 
