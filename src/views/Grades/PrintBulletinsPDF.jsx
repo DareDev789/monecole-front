@@ -130,6 +130,16 @@ export default function PrintBulletinsPDF({ students, className, termName, annee
         .sort((a, b) => b.average - a.average)
         .map((s, index) => ({ ...s, rank: index + 1 }));
 
+    function formatDateFR(dateString) {
+        if (!dateString) return "";
+        const date = new Date(dateString);
+        return new Intl.DateTimeFormat("fr-FR", {
+            day: "2-digit",
+            month: "long",
+            year: "numeric",
+        }).format(date);
+    }
+
     return (
         <Document>
             {rankedStudents.map((student) => (
@@ -145,6 +155,9 @@ export default function PrintBulletinsPDF({ students, className, termName, annee
                             <Text style={styles.schoolAddress}>
                                 Diego Suarez, Madagascar
                             </Text>
+                            <Text style={styles.schoolAddress}>
+                                "{annee_scolaire}"
+                            </Text>
                         </View>
                     </View>
 
@@ -159,8 +172,9 @@ export default function PrintBulletinsPDF({ students, className, termName, annee
                         Classe : {className}
                     </Text>
                     <Text>
-                        Date de naissance : {student.birth}
+                        Date de naissance : {formatDateFR(student.birth)}
                     </Text>
+
                     <Text>
                         Trimestre : {termName}
                     </Text>
