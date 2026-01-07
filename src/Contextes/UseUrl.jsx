@@ -4,7 +4,7 @@ export const UrlContext = createContext({
   url: "",
 });
 export function UrlContextProvider({ children }) {
-  const [url, setUrl] = useState("https://backecole.societe-manage.com/bg/public/api/");
+  const [url, setUrl] = useState("https://ecoleback.societe-manage.online/api/");
 
   return (
     <UrlContext.Provider
